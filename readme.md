@@ -1,4 +1,4 @@
-# Timesheet Tracker
+# Sentri
 
 > A free, AI-powered employee attendance system built for small businesses that can't afford enterprise HR software.
 
@@ -14,7 +14,7 @@
 
 My parents run small businesses and tracking employee attendance was a constant headache — manual timesheets, forgotten clock-ins, and no way to verify if someone actually showed up. Enterprise HR software like Workday or SAP costs hundreds of dollars a month, which makes it completely inaccessible to small family businesses and neighbourhood establishments.
 
-I built Timesheet Tracker as a free, production-ready alternative with AI-powered fraud detection that any small business can use.
+I built Sentri as a free, production-ready alternative with AI-powered fraud detection that any small business can use.
 
 ---
 
@@ -71,7 +71,7 @@ I built Timesheet Tracker as a free, production-ready alternative with AI-powere
 ## Project Structure
 
 ```
-timesheet-tracker/
+sentri/
 ├── index.html        # Login & registration page
 ├── employee.html     # Employee dashboard (clock in/out, history, corrections)
 ├── admin.html        # Admin panel (dashboard, alerts, analytics, settings)
@@ -101,8 +101,8 @@ timesheet-tracker/
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/YOUR_USERNAME/timesheet-tracker.git
-cd timesheet-tracker
+git clone https://github.com/YOUR_USERNAME/sentri.git
+cd sentri
 ```
 
 ### 2. Set up Firebase
