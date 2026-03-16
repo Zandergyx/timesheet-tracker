@@ -1,6 +1,6 @@
-# Sentri
+# Tempvre
 
-> A free, AI-powered employee attendance system built for small businesses that can't afford enterprise HR software.
+> Tempvre derives from *tempus*, the Latin word for time. It is a free, AI-powered employee attendance system built for small businesses that can't afford enterprise HR software — because verified time is the foundation of a trustworthy workplace.
 
 ![Made with Firebase](https://img.shields.io/badge/Firebase-Firestore-orange?style=flat-square&logo=firebase)
 ![Uses Groq AI](https://img.shields.io/badge/AI-Groq%20Llama%203-blue?style=flat-square)
@@ -14,7 +14,7 @@
 
 My parents run small businesses and tracking employee attendance was a constant headache — manual timesheets, forgotten clock-ins, and no way to verify if someone actually showed up. Enterprise HR software like Workday or SAP costs hundreds of dollars a month, which makes it completely inaccessible to small family businesses and neighbourhood establishments.
 
-I built Sentri as a free, production-ready alternative with AI-powered fraud detection that any small business can use.
+I built Tempvre as a free, production-ready alternative with AI-powered fraud detection that any small business can use.
 
 ---
 
@@ -71,7 +71,7 @@ I built Sentri as a free, production-ready alternative with AI-powered fraud det
 ## Project Structure
 
 ```
-sentri/
+tempvre/
 ├── index.html        # Login & registration page
 ├── employee.html     # Employee dashboard (clock in/out, history, corrections)
 ├── admin.html        # Admin panel (dashboard, alerts, analytics, settings)
@@ -101,8 +101,8 @@ sentri/
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/YOUR_USERNAME/sentri.git
-cd sentri
+git clone https://github.com/YOUR_USERNAME/tempvre.git
+cd tempvre
 ```
 
 ### 2. Set up Firebase

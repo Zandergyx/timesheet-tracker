@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sentri — Admin</title>
+  <title>Tempvre — Admin</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -454,7 +454,7 @@
         <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
       </svg>
     </div>
-    <span class="nav-title">Sentri</span>
+    <span class="nav-title">Tempvre</span>
     <span class="admin-badge">ADMIN</span>
   </div>
   <div style="display:flex;align-items:center;gap:0.75rem">
@@ -481,7 +481,7 @@
 
     <div class="sidebar-section">Records</div>
     <div class="nav-item" onclick="switchPanel('timesheets')">
-      <span class="icon">🕐</span> All Sentris
+      <span class="icon">🕐</span> All Tempvres
     </div>
     <div class="nav-item" onclick="switchPanel('corrections')">
       <span class="icon">✏️</span> Corrections
@@ -570,13 +570,13 @@
     
     <div class="panel" id="panel-timesheets">
       <div class="page-header">
-        <div class="page-title">All Sentris</div>
+        <div class="page-title">All Tempvres</div>
         <div class="page-sub">Full shift records across all employees</div>
       </div>
       <div class="card">
         <div style="display:flex;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap">
-          <input type="date" class="form-control" id="filterDate" style="max-width:180px" onchange="loadSentris()"/>
-          <select class="form-select" id="filterStatus" style="max-width:160px" onchange="loadSentris()">
+          <input type="date" class="form-control" id="filterDate" style="max-width:180px" onchange="loadTempvres()"/>
+          <select class="form-select" id="filterStatus" style="max-width:160px" onchange="loadTempvres()">
             <option value="">All statuses</option>
             <option value="normal">Normal</option>
             <option value="suspicious">Suspicious</option>
@@ -867,7 +867,7 @@
 <script>
   const GROQ_KEY = "YOUR_GROQ_API_KEY";
   let allEmployees = [];
-  let allSentris = [];
+  let allTempvres = [];
 
   
   async function initAdmin() {
@@ -877,7 +877,7 @@
     await loadSettings();
     await loadEmployees();
     await loadDashboard();
-    await loadSentris();
+    await loadTempvres();
     await loadCorrections();
     listenAlerts();
 
@@ -899,7 +899,7 @@
     });
 
     
-    if (name === 'timesheets') loadSentris();
+    if (name === 'timesheets') loadTempvres();
     if (name === 'corrections') loadCorrections();
     if (name === 'employees') renderEmployees();
     if (name === 'analytics') loadAnalytics();
@@ -1181,7 +1181,7 @@
   }
 
   
-  async function loadSentris() {
+  async function loadTempvres() {
     const tbody = document.getElementById('timesheetsBody');
     tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem"><div class="spinner"></div></td></tr>';
     try {
@@ -1227,7 +1227,7 @@
   function clearFilters() {
     document.getElementById('filterDate').value = '';
     document.getElementById('filterStatus').value = '';
-    loadSentris();
+    loadTempvres();
   }
 
   
@@ -1498,7 +1498,7 @@ Write professionally but simply. Do not use bullet points. Do not start with "He
   window.switchPanel = switchPanel;
   window.saveSettings = saveSettings;
   window.useMyLocation = useMyLocation;
-  window.loadSentris = loadSentris;
+  window.loadTempvres = loadTempvres;
   window.clearFilters = clearFilters;
   window.resolveCorrection = resolveCorrection;
   window.markSeen = markSeen;
