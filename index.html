@@ -8,451 +8,292 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg: #0a0a0f;
-      --panel: #111118;
-      --border: #1e1e2e;
-      --accent: #6ee7b7;
-      --accent2: #3b82f6;
-      --danger: #f87171;
-      --text: #e2e8f0;
-      --muted: #64748b;
-      --card: #16161f;
+      --bg: #0a0a0f; --panel: #111118; --border: #1e1e2e;
+      --accent: #6ee7b7; --accent2: #3b82f6; --danger: #f87171;
+      --text: #e2e8f0; --muted: #64748b; --card: #16161f;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      position: relative;
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      overflow-x: hidden; position: relative;
     }
-
-    
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 40px 40px;
-      opacity: 0.4;
-      z-index: 0;
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(var(--border) 1px,transparent 1px), linear-gradient(90deg,var(--border) 1px,transparent 1px);
+      background-size: 40px 40px; opacity: 0.4; z-index: 0;
     }
-
-    
-    .orb {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
-      z-index: 0;
-      animation: drift 8s ease-in-out infinite alternate;
-    }
-    .orb-1 {
-      width: 400px; height: 400px;
-      background: rgba(110, 231, 183, 0.08);
-      top: -100px; left: -100px;
-    }
-    .orb-2 {
-      width: 300px; height: 300px;
-      background: rgba(59, 130, 246, 0.08);
-      bottom: -50px; right: -50px;
-      animation-delay: -4s;
-    }
-    @keyframes drift {
-      from { transform: translate(0, 0) scale(1); }
-      to { transform: translate(30px, 20px) scale(1.1); }
-    }
-
-    .wrapper {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 460px;
-      padding: 1.5rem;
-    }
-
-    
-    .logo {
-      text-align: center;
-      margin-bottom: 2rem;
-      animation: fadeDown 0.6s ease both;
-    }
+    .orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; animation: drift 8s ease-in-out infinite alternate; }
+    .orb-1 { width:400px;height:400px;background:rgba(110,231,183,0.08);top:-100px;left:-100px; }
+    .orb-2 { width:300px;height:300px;background:rgba(59,130,246,0.08);bottom:-50px;right:-50px;animation-delay:-4s; }
+    @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(30px,20px) scale(1.1)} }
+    .wrapper { position:relative;z-index:1;width:100%;max-width:480px;padding:1.5rem; }
+    .logo { text-align:center;margin-bottom:2rem;animation:fadeDown 0.6s ease both; }
     .logo-icon {
-      width: 52px; height: 52px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 0.75rem;
-      box-shadow: 0 0 30px rgba(110,231,183,0.2);
+      width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+      border-radius:14px;display:inline-flex;align-items:center;justify-content:center;
+      margin-bottom:0.75rem;box-shadow:0 0 30px rgba(110,231,183,0.2);
     }
-    .logo-icon svg { width: 28px; height: 28px; }
-    .logo h1 {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 1.6rem;
-      letter-spacing: -0.03em;
-      color: var(--text);
-    }
-    .logo p {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-top: 0.2rem;
-    }
-
-    
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2rem;
-      animation: fadeUp 0.6s ease 0.1s both;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    }
-
-    
-    .tab-row {
-      display: flex;
-      background: var(--panel);
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 1.75rem;
-      border: 1px solid var(--border);
-    }
-    .tab-btn {
-      flex: 1;
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-family: 'Syne', sans-serif;
-      font-weight: 600;
-      font-size: 0.85rem;
-      padding: 0.5rem;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      letter-spacing: 0.02em;
-    }
-    .tab-btn.active {
-      background: var(--card);
-      color: var(--accent);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-
-    
-    .form-label {
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 0.4rem;
-    }
-    .form-control, .form-select {
-      background: var(--panel) !important;
-      border: 1px solid var(--border) !important;
-      color: var(--text) !important;
-      border-radius: 10px !important;
-      padding: 0.65rem 0.9rem !important;
-      font-family: 'DM Sans', sans-serif !important;
-      font-size: 0.9rem !important;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-    }
-    .form-control:focus, .form-select:focus {
-      border-color: var(--accent) !important;
-      box-shadow: 0 0 0 3px rgba(110,231,183,0.1) !important;
-      outline: none !important;
-    }
-    .form-control::placeholder { color: var(--muted) !important; }
-    .form-select option { background: var(--panel); }
-
-    
-    .mode-info {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.75rem 1rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-      margin-top: 0.5rem;
-      display: none;
-      line-height: 1.5;
-    }
-    .mode-info.show { display: block; }
-    .mode-info strong { color: var(--accent); }
-
-    
-    .btn-main {
-      width: 100%;
-      background: linear-gradient(135deg, var(--accent), #34d399);
-      border: none;
-      border-radius: 10px;
-      color: #0a0a0f;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 0.75rem;
-      letter-spacing: 0.02em;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      margin-top: 0.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-main:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 25px rgba(110,231,183,0.3);
-    }
-    .btn-main:active { transform: translateY(0); }
-    .btn-main:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-    
-    .btn-spinner {
-      display: none;
-      width: 16px; height: 16px;
-      border: 2px solid rgba(0,0,0,0.3);
-      border-top-color: #0a0a0f;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      margin: 0 auto;
-    }
-    .btn-main.loading .btn-text { display: none; }
-    .btn-main.loading .btn-spinner { display: block; }
-
-    
-    .alert-box {
-      border-radius: 10px;
-      padding: 0.7rem 1rem;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-      display: none;
-      border: 1px solid;
-    }
-    .alert-box.error {
-      background: rgba(248,113,113,0.1);
-      border-color: rgba(248,113,113,0.3);
-      color: var(--danger);
-      display: block;
-    }
-    .alert-box.success {
-      background: rgba(110,231,183,0.1);
-      border-color: rgba(110,231,183,0.3);
-      color: var(--accent);
-      display: block;
-    }
-
-    
-    .divider {
-      text-align: center;
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin: 1.25rem 0;
-      position: relative;
-    }
-    .divider::before, .divider::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 42%;
-      height: 1px;
-      background: var(--border);
-    }
-    .divider::before { left: 0; }
-    .divider::after { right: 0; }
-
-    
-    .footer-note {
-      text-align: center;
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 1.5rem;
-      animation: fadeUp 0.6s ease 0.3s both;
-    }
-
-    
-    .form-panel { display: none; }
-    .form-panel.active { display: block; }
-
-    
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    
-    .strength-bar {
-      height: 3px;
-      border-radius: 2px;
-      background: var(--border);
-      margin-top: 0.4rem;
-      overflow: hidden;
-    }
-    .strength-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.3s ease, background 0.3s ease;
-      width: 0%;
-    }
-    .strength-text {
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-top: 0.25rem;
-    }
+    .logo-icon svg { width:28px;height:28px; }
+    .logo h1 { font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-0.03em;color:var(--text); }
+    .logo p { font-size:0.85rem;color:var(--muted);margin-top:0.2rem; }
+    .card { background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;animation:fadeUp 0.6s ease 0.1s both;box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+    .role-row { display:flex;background:var(--panel);border-radius:10px;padding:4px;margin-bottom:1rem;border:1px solid var(--border);gap:4px; }
+    .role-btn { flex:1;background:none;border:none;color:var(--muted);font-family:'Syne',sans-serif;font-weight:600;font-size:0.8rem;padding:0.45rem 0.25rem;border-radius:7px;cursor:pointer;transition:all 0.2s ease; }
+    .role-btn.active { background:var(--card);color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,0.3); }
+    .tab-row { display:flex;background:var(--panel);border-radius:10px;padding:4px;margin-bottom:1.5rem;border:1px solid var(--border); }
+    .tab-btn { flex:1;background:none;border:none;color:var(--muted);font-family:'Syne',sans-serif;font-weight:600;font-size:0.85rem;padding:0.5rem;border-radius:7px;cursor:pointer;transition:all 0.2s ease; }
+    .tab-btn.active { background:var(--card);color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,0.3); }
+    .form-label { font-size:0.78rem;font-weight:500;color:var(--muted);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.4rem; }
+    .form-control,.form-select { background:var(--panel)!important;border:1px solid var(--border)!important;color:var(--text)!important;border-radius:10px!important;padding:0.65rem 0.9rem!important;font-family:'DM Sans',sans-serif!important;font-size:0.9rem!important;transition:border-color 0.2s ease,box-shadow 0.2s ease!important; }
+    .form-control:focus,.form-select:focus { border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(110,231,183,0.1)!important;outline:none!important; }
+    .form-control::placeholder { color:var(--muted)!important; }
+    .form-select option { background:var(--panel); }
+    .mode-info { background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;font-size:0.82rem;color:var(--muted);margin-top:0.5rem;display:none;line-height:1.5; }
+    .mode-info.show { display:block; }
+    .mode-info strong { color:var(--accent); }
+    .btn-main { width:100%;background:linear-gradient(135deg,var(--accent),#34d399);border:none;border-radius:10px;color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;padding:0.75rem;letter-spacing:0.02em;cursor:pointer;transition:all 0.2s ease;margin-top:0.5rem; }
+    .btn-main:hover { transform:translateY(-1px);box-shadow:0 8px 25px rgba(110,231,183,0.3); }
+    .btn-main:active { transform:translateY(0); }
+    .btn-main:disabled { opacity:0.6;cursor:not-allowed;transform:none; }
+    .btn-spinner { display:none;width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#0a0a0f;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto; }
+    .btn-main.loading .btn-text { display:none; }
+    .btn-main.loading .btn-spinner { display:block; }
+    .alert-box { border-radius:10px;padding:0.7rem 1rem;font-size:0.85rem;margin-bottom:1rem;display:none;border:1px solid; }
+    .alert-box.error { background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3);color:var(--danger);display:block; }
+    .alert-box.success { background:rgba(110,231,183,0.1);border-color:rgba(110,231,183,0.3);color:var(--accent);display:block; }
+    .admin-notice { background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:0.65rem 1rem;font-size:0.8rem;color:#fbbf24;margin-bottom:1.25rem;text-align:center; }
+    .field-hint { font-size:0.76rem;color:var(--muted);margin-top:0.35rem; }
+    .strength-bar { height:3px;border-radius:2px;background:var(--border);margin-top:0.4rem;overflow:hidden; }
+    .strength-fill { height:100%;border-radius:2px;transition:width 0.3s ease,background 0.3s ease;width:0%; }
+    .strength-text { font-size:0.72rem;color:var(--muted);margin-top:0.25rem; }
+    .form-panel { display:none; }
+    .form-panel.active { display:block; }
+    .footer-note { text-align:center;font-size:0.78rem;color:var(--muted);margin-top:1.5rem;animation:fadeUp 0.6s ease 0.3s both; }
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes spin { to{transform:rotate(360deg)} }
   </style>
 </head>
 <body>
-
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
 <div class="wrapper">
-  
   <div class="logo">
     <div class="logo-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <polyline points="12 6 12 12 16 14"/>
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
       </svg>
     </div>
     <h1>Tempvre</h1>
     <p>Time. Verified.</p>
   </div>
 
-  
   <div class="card">
-    
-    <div class="tab-row">
-      <button class="tab-btn active" onclick="switchTab('login')">Login</button>
-      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    <div class="role-row">
+      <button class="role-btn active" onclick="switchRole('employee')">Employee</button>
+      <button class="role-btn" onclick="switchRole('admin')">Admin</button>
     </div>
 
-    
     <div class="alert-box" id="alertBox"></div>
 
-    
-    <div class="form-panel active" id="loginPanel">
-      <div class="mb-3">
-        <label class="form-label">Email Address</label>
-        <input type="email" class="form-control" id="loginEmail" placeholder="you@example.com"/>
+    <!-- EMPLOYEE SECTION -->
+    <div id="employeeSection">
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+        <button class="tab-btn" onclick="switchTab('register')">Register</button>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password"/>
+
+      <div class="form-panel active" id="loginPanel">
+        <div class="mb-3">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" id="loginEmail" placeholder="you@example.com"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password"/>
+        </div>
+        <button class="btn-main" id="loginBtn" onclick="handleLogin()">
+          <span class="btn-text">Login</span>
+          <div class="btn-spinner"></div>
+        </button>
       </div>
-      <button class="btn-main" id="loginBtn" onclick="handleLogin()">
-        <span class="btn-text">Login</span>
-        <div class="btn-spinner"></div>
-      </button>
+
+      <div class="form-panel" id="registerPanel">
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-control" id="regName" placeholder="John Smith"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" id="regEmail" placeholder="you@example.com"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Company</label>
+          <select class="form-select" id="regCompany">
+            <option value="">— Loading companies... —</option>
+          </select>
+          <div class="field-hint">Your company must be registered by an admin first.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Department</label>
+          <input type="text" class="form-control" id="regDept" placeholder="e.g. Operations, Sales..."/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Tracking Mode</label>
+          <select class="form-select" id="regMode" onchange="showModeInfo()">
+            <option value="">— Choose how you clock in —</option>
+            <option value="photo">📸 Photo Mode</option>
+            <option value="geo">📍 Location Mode</option>
+            <option value="both">📸📍 Both (Photo + Location)</option>
+          </select>
+          <div class="mode-info" id="modeInfo"></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" id="regPassword" placeholder="Create a password" oninput="checkStrength()"/>
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <div class="strength-text" id="strengthText"></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-control" id="regConfirm" placeholder="Repeat your password"/>
+        </div>
+        <button class="btn-main" id="registerBtn" onclick="handleRegister()">
+          <span class="btn-text">Create Account</span>
+          <div class="btn-spinner"></div>
+        </button>
+      </div>
     </div>
 
-    
-    <div class="form-panel" id="registerPanel">
-      <div class="mb-3">
-        <label class="form-label">Full Name</label>
-        <input type="text" class="form-control" id="regName" placeholder="John Smith"/>
+    <!-- ADMIN SECTION -->
+    <div id="adminSection" style="display:none">
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="switchAdminTab('adminLogin')">Login</button>
+        <button class="tab-btn" onclick="switchAdminTab('adminRegister')">Register</button>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Email Address</label>
-        <input type="email" class="form-control" id="regEmail" placeholder="you@example.com"/>
+
+      <div class="form-panel active" id="adminLoginPanel">
+        <div class="admin-notice">Admin access — your panel will only show your company's data</div>
+        <div class="mb-3">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" id="adminLoginEmail" placeholder="admin@company.com"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" id="adminLoginPassword" placeholder="Enter your password"/>
+        </div>
+        <button class="btn-main" id="adminLoginBtn" onclick="handleAdminLogin()">
+          <span class="btn-text">Login as Admin</span>
+          <div class="btn-spinner"></div>
+        </button>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Department</label>
-        <input type="text" class="form-control" id="regDept" placeholder="e.g. Operations, Sales..."/>
+
+      <div class="form-panel" id="adminRegisterPanel">
+        <div class="admin-notice">Create an admin account to manage your company's attendance</div>
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-control" id="adminRegName" placeholder="Your name"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" id="adminRegEmail" placeholder="admin@company.com"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Company Name</label>
+          <input type="text" class="form-control" id="adminRegCompany" placeholder="e.g. Acme Corp, My Shop..."/>
+          <div class="field-hint">This creates a new company. Employees will see this name when registering.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" id="adminRegPassword" placeholder="Create a password" oninput="checkAdminStrength()"/>
+          <div class="strength-bar"><div class="strength-fill" id="adminStrengthFill"></div></div>
+          <div class="strength-text" id="adminStrengthText"></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-control" id="adminRegConfirm" placeholder="Repeat your password"/>
+        </div>
+        <button class="btn-main" id="adminRegBtn" onclick="handleAdminRegister()">
+          <span class="btn-text">Create Admin Account</span>
+          <div class="btn-spinner"></div>
+        </button>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Tracking Mode</label>
-        <select class="form-select" id="regMode" onchange="showModeInfo()">
-          <option value="">— Choose how you clock in —</option>
-          <option value="photo">📸 Photo Mode</option>
-          <option value="geo">📍 Location Mode</option>
-          <option value="both">📸📍 Both (Photo + Location)</option>
-        </select>
-        
-        <div class="mode-info" id="modeInfo"></div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input type="password" class="form-control" id="regPassword" placeholder="Create a password" oninput="checkStrength()"/>
-        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
-        <div class="strength-text" id="strengthText"></div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Confirm Password</label>
-        <input type="password" class="form-control" id="regConfirm" placeholder="Repeat your password"/>
-      </div>
-      <button class="btn-main" id="registerBtn" onclick="handleRegister()">
-        <span class="btn-text">Create Account</span>
-        <div class="btn-spinner"></div>
-      </button>
     </div>
   </div>
 
-  <div class="footer-note">
-    Tempvre &copy; 2026 &mdash; Secure attendance tracking
-  </div>
+  <div class="footer-note">Tempvre &copy; 2026 &mdash; Secure attendance tracking</div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "YOUR_FIREBASE_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",
     projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+    storageBucket: "YOUR_STORAGE_BUCKET",
     messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "1:YOUR_MESSAGING_SENDER_ID:web:cbfaef4e2fc6ae429981c6"
+    appId: "YOUR_APP_ID"
   };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  
-  const ADMIN_EMAIL = "YOUR_ADMIN_EMAIL";
-  const ADMIN_PASSWORD = "YOUR_ADMIN_PASSWORD";
-
-  
-  window._auth = auth;
-  window._db = db;
-  window._ADMIN_EMAIL = ADMIN_EMAIL;
-  window._ADMIN_PASSWORD = ADMIN_PASSWORD;
+  window._auth = auth; window._db = db;
   window._signIn = signInWithEmailAndPassword;
   window._createUser = createUserWithEmailAndPassword;
-  window._doc = doc;
-  window._setDoc = setDoc;
-  window._getDoc = getDoc;
+  window._doc = doc; window._setDoc = setDoc; window._getDoc = getDoc;
+  window._collection = collection; window._getDocs = getDocs;
+  window._addDoc = addDoc; window._query = query; window._where = where;
+
+  async function loadCompanies() {
+    try {
+      const snap = await getDocs(collection(db, 'companies'));
+      const sel = document.getElementById('regCompany');
+      if (snap.empty) {
+        sel.innerHTML = '<option value="">— No companies registered yet —</option>';
+        return;
+      }
+      sel.innerHTML = '<option value="">— Select your company —</option>' +
+        snap.docs.map(d => `<option value="${d.id}">${d.data().name}</option>`).join('');
+    } catch(e) { console.error(e); }
+  }
+  loadCompanies();
+  window._loadCompanies = loadCompanies;
 </script>
 
 <script>
-  
-  function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach((b, i) => {
-      b.classList.toggle('active', (i === 0) === (tab === 'login'));
-    });
-    document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
-    document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
+  const DEV_EMAILS = ['YOUR_DEV_EMAIL_1', 'YOUR_DEV_EMAIL_2'];
+
+  function switchRole(role) {
+    const isEmp = role === 'employee';
+    document.getElementById('employeeSection').style.display = isEmp ? 'block' : 'none';
+    document.getElementById('adminSection').style.display = isEmp ? 'none' : 'block';
+    document.querySelectorAll('.role-btn').forEach((b,i) => b.classList.toggle('active', (i===0) === isEmp));
     clearAlert();
   }
 
-  
+  function switchTab(tab) {
+    document.querySelectorAll('#employeeSection .tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0) === (tab==='login')));
+    document.getElementById('loginPanel').classList.toggle('active', tab==='login');
+    document.getElementById('registerPanel').classList.toggle('active', tab==='register');
+    if (tab === 'register') window._loadCompanies && window._loadCompanies();
+    clearAlert();
+  }
+
+  function switchAdminTab(tab) {
+    document.querySelectorAll('#adminSection .tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0) === (tab==='adminLogin')));
+    document.getElementById('adminLoginPanel').classList.toggle('active', tab==='adminLogin');
+    document.getElementById('adminRegisterPanel').classList.toggle('active', tab==='adminRegister');
+    clearAlert();
+  }
+
   function showModeInfo() {
     const mode = document.getElementById('regMode').value;
     const box = document.getElementById('modeInfo');
@@ -461,164 +302,153 @@
       geo: `<strong>📍 Location Mode</strong> — Your phone's GPS is checked when you clock in and out. You must be within range of the workplace for it to work.`,
       both: `<strong>📸📍 Both Mode</strong> — You need to take a selfie AND be at the workplace location. This is the most secure option.`
     };
-    if (info[mode]) {
-      box.innerHTML = info[mode];
-      box.classList.add('show');
-    } else {
-      box.classList.remove('show');
-    }
+    if (info[mode]) { box.innerHTML = info[mode]; box.classList.add('show'); }
+    else box.classList.remove('show');
   }
 
-  
-  function checkStrength() {
-    const val = document.getElementById('regPassword').value;
-    const fill = document.getElementById('strengthFill');
-    const text = document.getElementById('strengthText');
-    let score = 0;
-    if (val.length >= 8) score++;
-    if (/[A-Z]/.test(val)) score++;
-    if (/[0-9]/.test(val)) score++;
-    if (/[^A-Za-z0-9]/.test(val)) score++;
-    const levels = [
-      { w: '0%', c: 'transparent', t: '' },
-      { w: '25%', c: '#f87171', t: 'Weak' },
-      { w: '50%', c: '#fb923c', t: 'Fair' },
-      { w: '75%', c: '#facc15', t: 'Good' },
-      { w: '100%', c: '#6ee7b7', t: 'Strong' },
-    ];
-    const l = levels[score];
-    fill.style.width = l.w;
-    fill.style.background = l.c;
-    text.textContent = l.t ? `Password strength: ${l.t}` : '';
-    text.style.color = l.c;
+  function checkStrength() { _doStrength('regPassword','strengthFill','strengthText'); }
+  function checkAdminStrength() { _doStrength('adminRegPassword','adminStrengthFill','adminStrengthText'); }
+  function _doStrength(pwId, fillId, textId) {
+    const val = document.getElementById(pwId).value;
+    const fill = document.getElementById(fillId);
+    const text = document.getElementById(textId);
+    let s = 0;
+    if (val.length >= 8) s++;
+    if (/[A-Z]/.test(val)) s++;
+    if (/[0-9]/.test(val)) s++;
+    if (/[^A-Za-z0-9]/.test(val)) s++;
+    const l = [{w:'0%',c:'transparent',t:''},{w:'25%',c:'#f87171',t:'Weak'},{w:'50%',c:'#fb923c',t:'Fair'},{w:'75%',c:'#facc15',t:'Good'},{w:'100%',c:'#6ee7b7',t:'Strong'}][s];
+    fill.style.width = l.w; fill.style.background = l.c;
+    text.textContent = l.t ? `Password strength: ${l.t}` : ''; text.style.color = l.c;
   }
 
-  
-  function showAlert(msg, type = 'error') {
-    const box = document.getElementById('alertBox');
-    box.textContent = msg;
-    box.className = `alert-box ${type}`;
+  function showAlert(msg, type='error') {
+    const b = document.getElementById('alertBox');
+    b.textContent = msg; b.className = `alert-box ${type}`;
   }
   function clearAlert() {
-    const box = document.getElementById('alertBox');
-    box.className = 'alert-box';
-    box.textContent = '';
+    const b = document.getElementById('alertBox');
+    b.className = 'alert-box'; b.textContent = '';
+  }
+  function setLoading(id, v) {
+    const b = document.getElementById(id);
+    b.classList.toggle('loading', v); b.disabled = v;
   }
 
-  function setLoading(btnId, loading) {
-    const btn = document.getElementById(btnId);
-    btn.classList.toggle('loading', loading);
-    btn.disabled = loading;
-  }
-
-  
   async function handleLogin() {
     clearAlert();
     const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-
-    if (!email || !password) return showAlert('Please fill in all fields.');
-
+    const pw = document.getElementById('loginPassword').value;
+    if (!email || !pw) return showAlert('Please fill in all fields.');
     setLoading('loginBtn', true);
-
     try {
-      
-      if (email === window._ADMIN_EMAIL && password === window._ADMIN_PASSWORD) {
-        
-        await window._signIn(window._auth, email, password).catch(async () => {
-          
-          await window._createUser(window._auth, email, password);
-          await window._setDoc(
-            window._doc(window._db, 'users', window._auth.currentUser.uid),
-            { name: 'Admin', email, role: 'admin', setupComplete: true }
-          );
-        });
-        showAlert('Welcome back, Admin!', 'success');
-        setTimeout(() => window.location.href = 'admin.html', 800);
-        return;
-      }
-
-      const cred = await window._signIn(window._auth, email, password);
+      const cred = await window._signIn(window._auth, email, pw);
       const snap = await window._getDoc(window._doc(window._db, 'users', cred.user.uid));
-
       if (!snap.exists()) return showAlert('Account not found. Please register first.');
-
-      const data = snap.data();
       showAlert('Login successful! Redirecting...', 'success');
-      setTimeout(() => {
-        window.location.href = data.role === 'admin' ? 'admin.html' : 'employee.html';
-      }, 800);
-
-    } catch (err) {
-      const msgs = {
-        'auth/user-not-found': 'No account found with this email.',
-        'auth/wrong-password': 'Incorrect password.',
-        'auth/invalid-email': 'Please enter a valid email.',
-        'auth/too-many-requests': 'Too many attempts. Try again later.',
-        'auth/invalid-credential': 'Wrong email or password.',
-      };
-      showAlert(msgs[err.code] || 'Login failed. Please try again.');
-    } finally {
-      setLoading('loginBtn', false);
-    }
+      setTimeout(() => window.location.href = 'employee.html', 800);
+    } catch(err) {
+      showAlert({'auth/invalid-credential':'Wrong email or password.','auth/too-many-requests':'Too many attempts. Try again later.'}[err.code] || 'Login failed.');
+    } finally { setLoading('loginBtn', false); }
   }
 
-  
   async function handleRegister() {
     clearAlert();
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
+    const company = document.getElementById('regCompany').value;
     const dept = document.getElementById('regDept').value.trim();
     const mode = document.getElementById('regMode').value;
-    const password = document.getElementById('regPassword').value;
+    const pw = document.getElementById('regPassword').value;
     const confirm = document.getElementById('regConfirm').value;
-
-    if (!name || !email || !dept || !mode || !password || !confirm)
-      return showAlert('Please fill in all fields.');
-    if (password !== confirm)
-      return showAlert('Passwords do not match.');
-    if (password.length < 6)
-      return showAlert('Password must be at least 6 characters.');
-    if (email === window._ADMIN_EMAIL)
-      return showAlert('This email is reserved.');
-
+    if (!name||!email||!company||!dept||!mode||!pw||!confirm) return showAlert('Please fill in all fields.');
+    if (pw !== confirm) return showAlert('Passwords do not match.');
+    if (pw.length < 6) return showAlert('Password must be at least 6 characters.');
     setLoading('registerBtn', true);
-
     try {
-      const cred = await window._createUser(window._auth, email, password);
-      await window._setDoc(window._doc(window._db, 'users', cred.user.uid), {
-        name,
-        email,
-        department: dept,
-        trackingMode: mode,
-        role: 'employee',
-        setupComplete: true,
-        createdAt: new Date().toISOString()
+      const compSnap = await window._getDoc(window._doc(window._db,'companies',company));
+      const companyName = compSnap.exists() ? compSnap.data().name : '';
+      const adminEmail = compSnap.exists() ? compSnap.data().adminEmail : '';
+      const cred = await window._createUser(window._auth, email, pw);
+      await window._setDoc(window._doc(window._db,'users',cred.user.uid), {
+        name, email, companyId:company, companyName, adminEmail,
+        department:dept, trackingMode:mode, role:'employee',
+        setupComplete:true, createdAt:new Date().toISOString()
       });
       showAlert('Account created! Redirecting...', 'success');
       setTimeout(() => window.location.href = 'employee.html', 800);
-    } catch (err) {
-      const msgs = {
-        'auth/email-already-in-use': 'An account with this email already exists.',
-        'auth/invalid-email': 'Please enter a valid email.',
-        'auth/weak-password': 'Password is too weak.',
-      };
-      showAlert(msgs[err.code] || 'Registration failed. Please try again.');
-    } finally {
-      setLoading('registerBtn', false);
-    }
+    } catch(err) {
+      showAlert({'auth/email-already-in-use':'An account with this email already exists.','auth/weak-password':'Password is too weak.'}[err.code] || 'Registration failed.');
+    } finally { setLoading('registerBtn', false); }
   }
 
-  
+  async function handleAdminLogin() {
+    clearAlert();
+    const email = document.getElementById('adminLoginEmail').value.trim();
+    const pw = document.getElementById('adminLoginPassword').value;
+    if (!email || !pw) return showAlert('Please fill in all fields.');
+    setLoading('adminLoginBtn', true);
+    try {
+      const cred = await window._signIn(window._auth, email, pw);
+      const snap = await window._getDoc(window._doc(window._db,'users',cred.user.uid));
+      if (!snap.exists()) return showAlert('Admin account not found.');
+      const data = snap.data();
+      if (data.role !== 'admin' && !DEV_EMAILS.includes(email))
+        return showAlert('This account does not have admin access.');
+      showAlert('Welcome back! Redirecting...', 'success');
+      setTimeout(() => window.location.href = 'admin.html', 800);
+    } catch(err) {
+      showAlert({'auth/invalid-credential':'Wrong email or password.','auth/too-many-requests':'Too many attempts.'}[err.code] || 'Login failed.');
+    } finally { setLoading('adminLoginBtn', false); }
+  }
+
+  async function handleAdminRegister() {
+    clearAlert();
+    const name = document.getElementById('adminRegName').value.trim();
+    const email = document.getElementById('adminRegEmail').value.trim();
+    const company = document.getElementById('adminRegCompany').value.trim();
+    const pw = document.getElementById('adminRegPassword').value;
+    const confirm = document.getElementById('adminRegConfirm').value;
+    if (!name||!email||!company||!pw||!confirm) return showAlert('Please fill in all fields.');
+    if (pw !== confirm) return showAlert('Passwords do not match.');
+    if (pw.length < 6) return showAlert('Password must be at least 6 characters.');
+    setLoading('adminRegBtn', true);
+    try {
+      const compQ = await window._getDocs(
+        window._query(window._collection(window._db,'companies'), window._where('name','==',company))
+      );
+      if (!compQ.empty) return showAlert('A company with this name already exists.');
+      const cred = await window._createUser(window._auth, email, pw);
+      const compRef = await window._addDoc(window._collection(window._db,'companies'), {
+        name:company, adminEmail:email, adminUid:cred.user.uid, createdAt:new Date().toISOString()
+      });
+      await window._setDoc(window._doc(window._db,'users',cred.user.uid), {
+        name, email, companyId:compRef.id, companyName:company,
+        role:'admin', setupComplete:true, createdAt:new Date().toISOString()
+      });
+      showAlert('Admin account created! Redirecting...', 'success');
+      setTimeout(() => window.location.href = 'admin.html', 800);
+    } catch(err) {
+      showAlert({'auth/email-already-in-use':'An account with this email already exists.','auth/weak-password':'Password is too weak.'}[err.code] || 'Registration failed.');
+    } finally { setLoading('adminRegBtn', false); }
+  }
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const loginActive = document.getElementById('loginPanel').classList.contains('active');
-      if (loginActive) handleLogin();
-      else handleRegister();
+    if (e.key !== 'Enter') return;
+    const empVisible = document.getElementById('employeeSection').style.display !== 'none';
+    if (empVisible) {
+      document.getElementById('loginPanel').classList.contains('active') ? handleLogin() : handleRegister();
+    } else {
+      document.getElementById('adminLoginPanel').classList.contains('active') ? handleAdminLogin() : handleAdminRegister();
     }
   });
-</script>
 
+  window.switchRole = switchRole; window.switchTab = switchTab;
+  window.switchAdminTab = switchAdminTab; window.showModeInfo = showModeInfo;
+  window.checkStrength = checkStrength; window.checkAdminStrength = checkAdminStrength;
+  window.handleLogin = handleLogin; window.handleRegister = handleRegister;
+  window.handleAdminLogin = handleAdminLogin; window.handleAdminRegister = handleAdminRegister;
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

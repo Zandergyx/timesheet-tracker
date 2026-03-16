@@ -456,6 +456,7 @@
     </div>
     <span class="nav-title">Tempvre</span>
     <span class="admin-badge">ADMIN</span>
+    <span id="companyBadge" style="font-size:0.72rem;color:var(--muted);margin-left:0.25rem"></span>
   </div>
   <div style="display:flex;align-items:center;gap:0.75rem">
     <button class="btn-logout" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
@@ -838,9 +839,9 @@
     apiKey: "YOUR_FIREBASE_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",
     projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+    storageBucket: "YOUR_STORAGE_BUCKET",
     messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "1:YOUR_MESSAGING_SENDER_ID:web:cbfaef4e2fc6ae429981c6"
+    appId: "YOUR_APP_ID"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -854,12 +855,25 @@
   window._updateDoc = updateDoc; window._orderBy = orderBy;
   window._limit = limit; window._onSnapshot = onSnapshot;
 
-  const ADMIN_EMAIL = "YOUR_ADMIN_EMAIL";
+  const DEV_EMAILS = ['YOUR_DEV_EMAIL_1', 'YOUR_DEV_EMAIL_2'];
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'index.html'; return; }
-    if (user.email !== ADMIN_EMAIL) { window.location.href = 'employee.html'; return; }
+
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists()) { window.location.href = 'index.html'; return; }
+    const data = snap.data();
+
+    // Dev accounts and admins can access admin panel
+    if (data.role !== 'admin' && !DEV_EMAILS.includes(user.email)) {
+      window.location.href = 'employee.html'; return;
+    }
+
     window._adminUser = user;
+    window._adminData = data;
+    // Dev accounts see all data (no company filter), admins see their company only
+    window._companyId = DEV_EMAILS.includes(user.email) ? null : data.companyId;
+    window._isDev = DEV_EMAILS.includes(user.email);
     initAdmin();
   });
 </script>
@@ -873,6 +887,15 @@
   async function initAdmin() {
     document.getElementById('dashDate').textContent =
       new Date().toLocaleDateString('en-SG', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+    // Show company name or dev mode indicator in navbar
+    const companyBadge = document.getElementById('companyBadge');
+    if (window._isDev) {
+      companyBadge.textContent = '— All Companies (Dev)';
+      companyBadge.style.color = '#f59e0b';
+    } else if (window._adminData?.companyName) {
+      companyBadge.textContent = `— ${window._adminData.companyName}`;
+    }
 
     await loadSettings();
     await loadEmployees();
@@ -1050,7 +1073,8 @@
 
   async function loadSettings() {
     try {
-      const snap = await window._getDoc(window._doc(window._db, 'settings', 'company'));
+      const settingsId = window._companyId || 'global';
+      const snap = await window._getDoc(window._doc(window._db, 'settings', settingsId));
       if (snap.exists()) workSettings = { ...workSettings, ...snap.data() };
     } catch(e) {}
   }
@@ -1075,7 +1099,8 @@
       workplaceCoords: (!isNaN(lat) && !isNaN(lng)) ? { lat, lng } : (workSettings.workplaceCoords || null)
     };
     try {
-      await window._setDoc(window._doc(window._db, 'settings', 'company'), data);
+      const settingsId = window._companyId || 'global';
+      await window._setDoc(window._doc(window._db, 'settings', settingsId), data);
       workSettings = data;
       showToast('✅ Settings saved!', 'success');
     } catch(e) { showToast('Failed to save settings.', 'error'); }
@@ -1092,7 +1117,16 @@
   
   async function loadEmployees() {
     try {
-      const snap = await window._getDocs(window._collection(window._db, 'users'));
+      let snap;
+      if (window._companyId) {
+        snap = await window._getDocs(
+          window._query(window._collection(window._db, 'users'),
+            window._where('companyId', '==', window._companyId),
+            window._where('role', '==', 'employee'))
+        );
+      } else {
+        snap = await window._getDocs(window._collection(window._db, 'users'));
+      }
       allEmployees = snap.docs
         .map(d => ({ id: d.id, ...d.data() }))
         .filter(e => e.role !== 'admin');
@@ -1135,10 +1169,16 @@
   async function loadDashboard() {
     const today = getTodayStr();
     try {
-      const q = window._query(
-        window._collection(window._db, 'timesheets'),
-        window._where('date', '==', today)
-      );
+      let q;
+      if (window._companyId) {
+        q = window._query(
+          window._collection(window._db, 'timesheets'),
+          window._where('date', '==', today),
+          window._where('companyId', '==', window._companyId)
+        );
+      } else {
+        q = window._query(window._collection(window._db, 'timesheets'), window._where('date', '==', today));
+      }
       const snap = await window._getDocs(q);
       const shifts = snap.docs.map(d => d.data());
 
@@ -1188,13 +1228,19 @@
       const dateFilter = document.getElementById('filterDate')?.value;
       const statusFilter = document.getElementById('filterStatus')?.value;
 
-      let q = window._query(window._collection(window._db, 'timesheets'), window._limit(100));
-      if (dateFilter) q = window._query(window._collection(window._db, 'timesheets'), window._where('date','==',dateFilter));
+      let q;
+      if (dateFilter) {
+        q = window._companyId
+          ? window._query(window._collection(window._db,'timesheets'), window._where('date','==',dateFilter), window._where('companyId','==',window._companyId))
+          : window._query(window._collection(window._db,'timesheets'), window._where('date','==',dateFilter));
+      } else {
+        q = window._companyId
+          ? window._query(window._collection(window._db,'timesheets'), window._where('companyId','==',window._companyId), window._limit(100))
+          : window._query(window._collection(window._db,'timesheets'), window._limit(100));
+      }
 
       const snap = await window._getDocs(q);
       let shifts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-      
       if (statusFilter) shifts = shifts.filter(s => s.status === statusFilter);
       shifts.sort((a, b) => b.date > a.date ? 1 : -1);
 
@@ -1234,7 +1280,10 @@
   async function loadCorrections() {
     const tbody = document.getElementById('correctionsBody');
     try {
-      const snap = await window._getDocs(window._collection(window._db, 'corrections'));
+      const q = window._companyId
+        ? window._query(window._collection(window._db,'corrections'), window._where('companyId','==',window._companyId))
+        : window._query(window._collection(window._db,'corrections'));
+      const snap = await window._getDocs(q);
       const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
         .sort((a, b) => b.createdAt > a.createdAt ? 1 : -1);
 
@@ -1283,10 +1332,10 @@
   
   
   function listenAlerts() {
-    const q = window._query(
-      window._collection(window._db, 'alerts'),
-      window._where('seen', '==', false)
-    );
+    const q = window._companyId
+      ? window._query(window._collection(window._db,'alerts'), window._where('seen','==',false), window._where('companyId','==',window._companyId))
+      : window._query(window._collection(window._db,'alerts'), window._where('seen','==',false));
+
     window._onSnapshot(q, (snap) => {
       const alerts = snap.docs.map(d => ({ id: d.id, ...d.data() }))
         .sort((a, b) => b.createdAt > a.createdAt ? 1 : -1);
@@ -1297,13 +1346,11 @@
       badge.classList.toggle('show', unseen > 0);
       document.getElementById('bellDot').classList.toggle('show', unseen > 0);
 
-      
       snap.docChanges().forEach(change => {
         if (change.type === 'added') {
           const alert = { id: change.doc.id, ...change.doc.data() };
           if (!alert.seen && !alert.emailSent) {
             sendFlaggedEmail(alert);
-            
             window._updateDoc(window._doc(window._db, 'alerts', alert.id), { emailSent: true });
           }
         }
@@ -1320,7 +1367,7 @@
           <div class="alert-icon">${a.type === 'early_clockout' ? '⏰' : '🚨'}</div>
           <div style="flex:1">
             <div class="alert-msg">${a.message || 'Flagged clock-out event'}</div>
-            <div class="alert-time">${a.date} • ${formatTime(new Date(a.clockOutTime))}</div>
+            <div class="alert-time">${a.date} • ${formatTime(new Date(a.clockOutTime))}${a.companyName ? ` • ${a.companyName}` : ''}</div>
             <div class="alert-flags">
               ${(a.flags||[]).map(f => `<span class="flag-chip">${f}</span>`).join('')}
             </div>
@@ -1335,7 +1382,9 @@
   }
 
   async function markAllSeen() {
-    const q = window._query(window._collection(window._db, 'alerts'), window._where('seen','==',false));
+    const q = window._companyId
+      ? window._query(window._collection(window._db,'alerts'), window._where('seen','==',false), window._where('companyId','==',window._companyId))
+      : window._query(window._collection(window._db,'alerts'), window._where('seen','==',false));
     const snap = await window._getDocs(q);
     await Promise.all(snap.docs.map(d => window._updateDoc(d.ref, { seen: true })));
     showToast('All alerts marked as seen.', 'success');
