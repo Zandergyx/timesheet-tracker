@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Timesheet — Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --panel: #111118;
+      --border: #1e1e2e;
+      --accent: #6ee7b7;
+      --accent2: #3b82f6;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --card: #16161f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--panel); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    
+    input[type="date"], input[type="time"], input[type="number"] {
+      color-scheme: dark;
+    }
+    select option {
+      background: var(--panel) !important;
+      color: var(--text) !important;
+    }
+    body, .card, table, th, td, select, input, textarea, label, p, div, span, h1, h2, h3, h4, h5, h6 {
+      color: var(--text) !important;
+    }
+    a { color: var(--accent) !important; }
+    .text-muted, [style*="color:var(--muted)"] { color: var(--muted) !important; }
+    .form-control, .form-select {
+      color: var(--text) !important;
+      background-color: var(--panel) !important;
+      border-color: var(--border) !important;
+    }
+    .table { color: var(--text) !important; }
+    .table > :not(caption) > * > * { background-color: transparent !important; color: var(--text) !important; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.25;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    
+    .navbar {
+      background: rgba(17,17,24,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.5rem;
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-logo-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-logo-icon svg { width: 18px; height: 18px; }
+    .nav-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; }
+    .admin-badge {
+      font-size: 0.7rem; font-weight: 700; font-family: 'Syne', sans-serif;
+      padding: 0.2rem 0.55rem; border-radius: 6px; letter-spacing: 0.06em;
+      background: rgba(251,191,36,0.15); color: var(--warning);
+      border: 1px solid rgba(251,191,36,0.3);
+    }
+    .btn-logout {
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.8rem;
+      padding: 0.3rem 0.75rem; border-radius: 8px;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+    }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+    
+    .alert-bell {
+      position: relative; cursor: pointer;
+      width: 34px; height: 34px;
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; transition: all 0.2s;
+    }
+    .alert-bell:hover { border-color: var(--warning); }
+    .bell-dot {
+      position: absolute; top: 4px; right: 4px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--danger); border: 2px solid var(--bg);
+      display: none;
+    }
+    .bell-dot.show { display: block; animation: pulse 1.5s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+    
+    .layout { display: flex; min-height: calc(100vh - 57px); position: relative; z-index: 1; }
+
+    
+    .sidebar {
+      width: 220px; flex-shrink: 0;
+      background: rgba(17,17,24,0.8);
+      border-right: 1px solid var(--border);
+      padding: 1.25rem 0;
+      position: sticky; top: 57px;
+      height: calc(100vh - 57px);
+      overflow-y: auto;
+    }
+    .sidebar-section {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); padding: 0 1rem 0.5rem;
+      margin-top: 1rem;
+    }
+    .sidebar-section:first-child { margin-top: 0; }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.55rem 1rem; cursor: pointer;
+      font-size: 0.85rem; color: var(--muted);
+      transition: all 0.15s; border-left: 2px solid transparent;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .nav-item.active {
+      color: var(--accent); border-left-color: var(--accent);
+      background: rgba(110,231,183,0.05);
+    }
+    .nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+    .nav-badge {
+      margin-left: auto; background: var(--danger);
+      color: white; font-size: 0.65rem; font-weight: 700;
+      padding: 0.1rem 0.4rem; border-radius: 10px;
+      display: none;
+    }
+    .nav-badge.show { display: inline-block; }
+
+    
+    .main { flex: 1; padding: 1.5rem; overflow-x: hidden; }
+
+    
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    
+    .page-header {
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    .page-title {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.5rem; letter-spacing: -0.03em;
+    }
+    .page-sub { font-size: 0.84rem; color: var(--muted); margin-top: 0.2rem; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem; margin-bottom: 1.25rem;
+    }
+    .card-title {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.8rem; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 1.25rem;
+    }
+
+    
+    .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.25rem; }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.25rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    .stat-card:nth-child(2) { animation-delay: 0.05s; }
+    .stat-card:nth-child(3) { animation-delay: 0.1s; }
+    .stat-card:nth-child(4) { animation-delay: 0.15s; }
+    .stat-icon { font-size: 1.4rem; margin-bottom: 0.6rem; }
+    .stat-val {
+      font-family: 'Syne', sans-serif; font-size: 1.8rem;
+      font-weight: 800; letter-spacing: -0.04em; line-height: 1;
+    }
+    .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    
+    .employee-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 0; border-bottom: 1px solid rgba(30,30,46,0.5);
+    }
+    .employee-row:last-child { border-bottom: none; }
+    .emp-info { display: flex; align-items: center; gap: 0.75rem; }
+    .emp-avatar {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 0.85rem; color: #0a0a0f; flex-shrink: 0;
+    }
+    .emp-name { font-size: 0.88rem; font-weight: 500; }
+    .emp-dept { font-size: 0.74rem; color: var(--muted); }
+    .emp-status {
+      font-size: 0.72rem; font-weight: 600; font-family: 'Syne', sans-serif;
+      padding: 0.2rem 0.6rem; border-radius: 20px; border: 1px solid;
+    }
+    .emp-status.in { color: var(--accent); border-color: rgba(110,231,183,0.3); background: rgba(110,231,183,0.08); }
+    .emp-status.out { color: var(--muted); border-color: var(--border); background: transparent; }
+    .emp-status.flagged { color: var(--danger); border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.08); }
+    .emp-status.absent { color: var(--warning); border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.08); }
+
+    
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    .data-table th {
+      color: var(--muted); font-weight: 500; text-transform: uppercase;
+      font-size: 0.7rem; letter-spacing: 0.05em;
+      padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); text-align: left;
+    }
+    .data-table td { padding: 0.7rem 0.75rem; border-bottom: 1px solid rgba(30,30,46,0.4); vertical-align: middle; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .badge-status {
+      font-size: 0.68rem; font-weight: 600; padding: 0.2rem 0.55rem;
+      border-radius: 6px; font-family: 'Syne', sans-serif;
+    }
+    .badge-normal { background: rgba(110,231,183,0.12); color: var(--accent); }
+    .badge-suspicious { background: rgba(251,191,36,0.12); color: var(--warning); }
+    .badge-flagged { background: rgba(248,113,113,0.12); color: var(--danger); }
+    .badge-incomplete { background: rgba(100,116,139,0.12); color: var(--muted); }
+    .badge-late { background: rgba(251,191,36,0.12); color: var(--warning); }
+    .badge-pending { background: rgba(59,130,246,0.12); color: var(--accent2); }
+    .badge-approved { background: rgba(110,231,183,0.12); color: var(--accent); }
+    .badge-rejected { background: rgba(248,113,113,0.12); color: var(--danger); }
+
+    
+    .alert-card {
+      background: var(--panel); border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 12px; padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem; display: flex;
+      align-items: flex-start; gap: 1rem;
+      animation: fadeUp 0.3s ease both;
+    }
+    .alert-card.seen { border-color: var(--border); opacity: 0.6; }
+    .alert-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .alert-msg { font-size: 0.85rem; line-height: 1.5; }
+    .alert-time { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; }
+    .alert-flags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem; }
+    .flag-chip {
+      font-size: 0.65rem; font-weight: 600; font-family: 'Syne', sans-serif;
+      padding: 0.15rem 0.45rem; border-radius: 6px; letter-spacing: 0.04em;
+      background: rgba(248,113,113,0.12); color: var(--danger);
+      border: 1px solid rgba(248,113,113,0.2);
+    }
+    .btn-mark-seen {
+      margin-left: auto; flex-shrink: 0;
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.75rem;
+      padding: 0.3rem 0.65rem; border-radius: 7px;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+    }
+    .btn-mark-seen:hover { border-color: var(--accent); color: var(--accent); }
+
+    
+    .form-label {
+      font-size: 0.76rem; font-weight: 500; color: var(--muted);
+      letter-spacing: 0.05em; text-transform: uppercase;
+      margin-bottom: 0.4rem; display: block;
+    }
+    .form-control, .form-select {
+      background: var(--panel) !important; border: 1px solid var(--border) !important;
+      color: var(--text) !important; border-radius: 10px !important;
+      padding: 0.6rem 0.85rem !important; font-family: 'DM Sans', sans-serif !important;
+      font-size: 0.88rem !important; width: 100%; transition: border-color 0.2s !important;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--accent) !important; outline: none !important;
+      box-shadow: 0 0 0 3px rgba(110,231,183,0.1) !important;
+    }
+    .form-control::placeholder { color: var(--muted) !important; }
+    .form-select option { background: var(--panel); }
+
+    
+    .btn-primary-action {
+      background: linear-gradient(135deg, var(--accent), #34d399);
+      border: none; border-radius: 10px; color: #0a0a0f;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
+      padding: 0.65rem 1.25rem; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-primary-action:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(110,231,183,0.25); }
+    .btn-secondary-action {
+      background: var(--panel); border: 1px solid var(--border);
+      color: var(--text); font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; padding: 0.5rem 1rem;
+      border-radius: 8px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-secondary-action:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger-action {
+      background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3);
+      color: var(--danger); font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; padding: 0.5rem 1rem;
+      border-radius: 8px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-danger-action:hover { background: rgba(248,113,113,0.2); }
+    .btn-approve {
+      background: rgba(110,231,183,0.1); border: 1px solid rgba(110,231,183,0.3);
+      color: var(--accent); font-size: 0.75rem; padding: 0.3rem 0.65rem;
+      border-radius: 7px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+    }
+    .btn-approve:hover { background: rgba(110,231,183,0.2); }
+    .btn-reject {
+      background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3);
+      color: var(--danger); font-size: 0.75rem; padding: 0.3rem 0.65rem;
+      border-radius: 7px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+    }
+    .btn-reject:hover { background: rgba(248,113,113,0.2); }
+
+    
+    #mapPicker {
+      width: 100%; height: 280px; border-radius: 12px;
+      border: 1px solid var(--border); overflow: hidden;
+      margin-bottom: 0.75rem; background: var(--panel);
+    }
+
+    
+    .ai-summary-box {
+      background: var(--panel); border: 1px solid rgba(110,231,183,0.15);
+      border-radius: 12px; padding: 1rem 1.25rem;
+      font-size: 0.85rem; line-height: 1.7; color: var(--text);
+      white-space: pre-wrap; min-height: 80px;
+    }
+    .ai-thinking {
+      display: flex; align-items: center; gap: 0.5rem;
+      color: var(--muted); font-size: 0.83rem;
+    }
+
+    
+    .mode-chip {
+      font-size: 0.68rem; font-weight: 600; font-family: 'Syne', sans-serif;
+      padding: 0.18rem 0.5rem; border-radius: 6px; border: 1px solid;
+    }
+    .mode-chip.photo { color: var(--accent); border-color: rgba(110,231,183,0.3); background: rgba(110,231,183,0.08); }
+    .mode-chip.geo { color: var(--accent2); border-color: rgba(59,130,246,0.3); background: rgba(59,130,246,0.08); }
+    .mode-chip.both { color: var(--warning); border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.08); }
+
+    
+    .spinner {
+      width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.15);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.6s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    
+    .toast-wrap { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; display: flex; flex-direction: column; gap: 0.5rem; }
+    .toast-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.75rem 1rem;
+      font-size: 0.84rem; max-width: 300px;
+      animation: slideIn 0.3s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    @keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+
+    
+    .loading-overlay {
+      position: fixed; inset: 0; background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(4px); z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 1rem;
+    }
+    .loading-overlay.hide { display: none; }
+    .loading-text { font-family: 'Syne', sans-serif; font-size: 0.9rem; color: var(--muted); }
+
+    
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 0.85rem; }
+    .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+    
+    body.light {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #94a3b8;
+      --card: #ffffff;
+    }
+    body.light .navbar { background: rgba(255,255,255,0.95); }
+    body.light .sidebar { background: rgba(248,250,252,0.9); }
+    body.light body::before { opacity: 0.15; }
+    body.light, body.light .card, body.light table,
+    body.light th, body.light td, body.light select,
+    body.light input, body.light textarea, body.light label,
+    body.light p, body.light div, body.light span,
+    body.light h1, body.light h2, body.light h3,
+    body.light h4, body.light h5, body.light h6 {
+      color: var(--text) !important;
+    }
+
+    
+    .lb-row {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0.85rem 0; border-bottom: 1px solid var(--border);
+    }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-rank { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; width: 32px; text-align: center; flex-shrink: 0; }
+    .lb-rank.gold { color: #fbbf24; }
+    .lb-rank.silver { color: #94a3b8; }
+    .lb-rank.bronze { color: #b45309; }
+    .lb-bar-wrap { flex: 1; }
+    .lb-name { font-size: 0.88rem; font-weight: 500; margin-bottom: 0.3rem; }
+    .lb-stats { font-size: 0.74rem; color: var(--muted); }
+    .lb-bar-bg { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 0.3rem; }
+    .lb-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.8s ease; }
+    .lb-pct { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; color: var(--accent); flex-shrink: 0; }
+
+    
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .stat-grid { grid-template-columns: repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner" style="width:32px;height:32px;border-color:rgba(110,231,183,0.2);border-top-color:var(--accent)"></div>
+  <div class="loading-text">Loading admin panel...</div>
+</div>
+
+<nav class="navbar">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <span class="nav-title">Timesheet</span>
+    <span class="admin-badge">ADMIN</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:0.75rem">
+    <button class="btn-logout" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
+    <div class="alert-bell" onclick="switchPanel('alerts')" title="Alerts">
+      🔔
+      <div class="bell-dot" id="bellDot"></div>
+    </div>
+    <button class="btn-logout" onclick="handleLogout()">Logout</button>
+  </div>
+</nav>
+
+<div class="layout">
+  
+  <aside class="sidebar">
+    <div class="sidebar-section">Overview</div>
+    <div class="nav-item active" onclick="switchPanel('dashboard')">
+      <span class="icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="switchPanel('alerts')">
+      <span class="icon">🚨</span> Alerts
+      <span class="nav-badge" id="alertsBadge">0</span>
+    </div>
+
+    <div class="sidebar-section">Records</div>
+    <div class="nav-item" onclick="switchPanel('timesheets')">
+      <span class="icon">🕐</span> All Timesheets
+    </div>
+    <div class="nav-item" onclick="switchPanel('corrections')">
+      <span class="icon">✏️</span> Corrections
+      <span class="nav-badge" id="corrBadge">0</span>
+    </div>
+
+    <div class="sidebar-section">Management</div>
+    <div class="nav-item" onclick="switchPanel('employees')">
+      <span class="icon">👥</span> Employees
+    </div>
+    <div class="nav-item" onclick="switchPanel('analytics')">
+      <span class="icon">📈</span> Analytics
+    </div>
+    <div class="nav-item" onclick="switchPanel('leaderboard')">
+      <span class="icon">🏆</span> Leaderboard
+    </div>
+    <div class="nav-item" onclick="switchPanel('summary')">
+      <span class="icon">🤖</span> AI Summary
+    </div>
+    <div class="nav-item" onclick="switchPanel('settings')">
+      <span class="icon">⚙️</span> Settings
+    </div>
+    <div class="nav-item" onclick="switchPanel('export')">
+      <span class="icon">📥</span> Export CSV
+    </div>
+  </aside>
+
+  
+  <main class="main">
+
+    
+    <div class="panel active" id="panel-dashboard">
+      <div class="page-header">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub" id="dashDate">Loading...</div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-val" id="statTotal">—</div>
+          <div class="stat-lbl">Total Employees</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-val" id="statPresent" style="color:var(--accent)">—</div>
+          <div class="stat-lbl">Present Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🚨</div>
+          <div class="stat-val" id="statFlagged" style="color:var(--danger)">—</div>
+          <div class="stat-lbl">Flagged Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏰</div>
+          <div class="stat-val" id="statLate" style="color:var(--warning)">—</div>
+          <div class="stat-lbl">Late Today</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Today's Attendance</div>
+        <div id="attendanceList">
+          <div class="empty-state"><div class="empty-icon">👥</div>Loading employees...</div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="panel" id="panel-alerts">
+      <div class="page-header">
+        <div class="page-title">🚨 Alerts</div>
+        <div class="page-sub">Real-time flagged clock-out events</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <div class="card-title" style="margin:0">Flagged Events</div>
+          <button class="btn-secondary-action" onclick="markAllSeen()">Mark all seen</button>
+        </div>
+        <div id="alertsList">
+          <div class="empty-state"><div class="empty-icon">✅</div>No alerts yet</div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="panel" id="panel-timesheets">
+      <div class="page-header">
+        <div class="page-title">All Timesheets</div>
+        <div class="page-sub">Full shift records across all employees</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap">
+          <input type="date" class="form-control" id="filterDate" style="max-width:180px" onchange="loadTimesheets()"/>
+          <select class="form-select" id="filterStatus" style="max-width:160px" onchange="loadTimesheets()">
+            <option value="">All statuses</option>
+            <option value="normal">Normal</option>
+            <option value="suspicious">Suspicious</option>
+            <option value="flagged">Flagged</option>
+            <option value="incomplete">Incomplete</option>
+          </select>
+          <button class="btn-secondary-action" onclick="clearFilters()">Clear filters</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Date</th>
+                <th>Clock In</th>
+                <th>Clock Out</th>
+                <th>Hours</th>
+                <th>Mode</th>
+                <th>Status</th>
+                <th>Flags</th>
+                <th>AI Verdict</th>
+              </tr>
+            </thead>
+            <tbody id="timesheetsBody">
+              <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="panel" id="panel-corrections">
+      <div class="page-header">
+        <div class="page-title">Correction Requests</div>
+        <div class="page-sub">Review and approve employee time correction requests</div>
+      </div>
+      <div class="card">
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Date</th>
+                <th>Requested In</th>
+                <th>Requested Out</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="correctionsBody">
+              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="panel" id="panel-employees">
+      <div class="page-header">
+        <div class="page-title">Employees</div>
+        <div class="page-sub">All registered employee accounts</div>
+      </div>
+      <div class="card">
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Tracking Mode</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody id="employeesBody">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:2rem">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="panel" id="panel-summary">
+      <div class="page-header">
+        <div class="page-title">🤖 AI Weekly Summary</div>
+        <div class="page-sub">Generate a plain-English attendance report for any employee</div>
+      </div>
+      <div class="card">
+        <div class="mb-3">
+          <label class="form-label">Select Employee</label>
+          <select class="form-select" id="summaryEmployee">
+            <option value="">— Choose an employee —</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Week Starting</label>
+          <input type="date" class="form-control" id="summaryWeek"/>
+        </div>
+        <button class="btn-primary-action" onclick="generateSummary()">Generate Summary</button>
+        <div style="margin-top:1.25rem">
+          <div class="ai-thinking" id="summaryThinking" style="display:none">
+            <div class="spinner"></div> Groq AI is analysing shift data...
+          </div>
+          <div class="ai-summary-box" id="summaryBox" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="panel" id="panel-settings">
+      <div class="page-header">
+        <div class="page-title">Settings</div>
+        <div class="page-sub">Configure work hours, location, and tracking rules</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Work Hours</div>
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label">Work Start Time</label>
+            <input type="time" class="form-control" id="setWorkStart" value="09:00"/>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Work End Time</label>
+            <input type="time" class="form-control" id="setWorkEnd" value="18:00"/>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Late Threshold (minutes after start time)</label>
+          <input type="number" class="form-control" id="setLateThreshold" value="30" min="1" max="120"/>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Geofence Settings</div>
+        <div class="mb-3">
+          <label class="form-label">Allowed Radius (metres)</label>
+          <input type="number" class="form-control" id="setRadius" value="200" min="50" max="2000"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Workplace Location — Click map to set pin</label>
+          <div id="mapPicker" style="width:100%;height:300px;border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:0.75rem;z-index:1"></div>
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="form-label">Latitude</label>
+              <input type="number" class="form-control" id="setLat" step="0.0001" placeholder="e.g. 1.3521"/>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Longitude</label>
+              <input type="number" class="form-control" id="setLng" step="0.0001" placeholder="e.g. 103.8198"/>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap">
+            <button class="btn-secondary-action" onclick="useMyLocation()">📍 Use my current location</button>
+            <button class="btn-secondary-action" onclick="centreMap()">🎯 Centre map on pin</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary-action" onclick="saveSettings()">Save All Settings</button>
+    </div>
+
+    
+    <div class="panel" id="panel-export">
+      <div class="page-header">
+        <div class="page-title">Export CSV</div>
+        <div class="page-sub">Download timesheet data for payroll</div>
+      </div>
+      <div class="card">
+        <div class="mb-3">
+          <label class="form-label">Date Range</label>
+          <div class="row g-2">
+            <div class="col-6">
+              <input type="date" class="form-control" id="exportFrom"/>
+            </div>
+            <div class="col-6">
+              <input type="date" class="form-control" id="exportTo"/>
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Employee (optional)</label>
+          <select class="form-select" id="exportEmployee">
+            <option value="">All employees</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Include</label>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.25rem">
+            <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;cursor:pointer">
+              <input type="checkbox" id="exportIncludeAll" checked style="accent-color:var(--accent)"/> All statuses
+            </label>
+            <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;cursor:pointer">
+              <input type="checkbox" id="exportFlaggedOnly" style="accent-color:var(--danger)"/> Flagged only
+            </label>
+          </div>
+        </div>
+        <button class="btn-primary-action" onclick="exportCSV()">📥 Download CSV</button>
+      </div>
+    </div>
+
+    
+    <div class="panel" id="panel-analytics">
+      <div class="page-header">
+        <div class="page-title">📈 Analytics</div>
+        <div class="page-sub">Attendance trends over the last 7 days</div>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-title">Hours Worked Per Day</div>
+            <canvas id="chartHours" height="120"></canvas>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-title">Status Breakdown</div>
+            <canvas id="chartStatus" height="180"></canvas>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="card">
+            <div class="card-title">Attendance Rate (% present per day)</div>
+            <canvas id="chartAttendance" height="80"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="panel" id="panel-leaderboard">
+      <div class="page-header">
+        <div class="page-title">🏆 Punctuality Leaderboard</div>
+        <div class="page-sub">Ranked by on-time rate this month</div>
+      </div>
+      <div class="card">
+        <div id="leaderboardList">
+          <div class="empty-state"><div class="empty-icon">🏆</div>Loading leaderboard...</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, collection, query, where,
+           getDocs, updateDoc, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "YOUR_FIREBASE_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "1:YOUR_MESSAGING_SENDER_ID:web:cbfaef4e2fc6ae429981c6"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window._auth = auth; window._db = db; window._signOut = signOut;
+  window._doc = doc; window._getDoc = getDoc; window._setDoc = setDoc;
+  window._collection = collection; window._query = query;
+  window._where = where; window._getDocs = getDocs;
+  window._updateDoc = updateDoc; window._orderBy = orderBy;
+  window._limit = limit; window._onSnapshot = onSnapshot;
+
+  const ADMIN_EMAIL = "YOUR_ADMIN_EMAIL";
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'index.html'; return; }
+    if (user.email !== ADMIN_EMAIL) { window.location.href = 'employee.html'; return; }
+    window._adminUser = user;
+    initAdmin();
+  });
+</script>
+
+<script>
+  const GROQ_KEY = "YOUR_GROQ_API_KEY";
+  let allEmployees = [];
+  let allTimesheets = [];
+
+  
+  async function initAdmin() {
+    document.getElementById('dashDate').textContent =
+      new Date().toLocaleDateString('en-SG', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+    await loadSettings();
+    await loadEmployees();
+    await loadDashboard();
+    await loadTimesheets();
+    await loadCorrections();
+    listenAlerts();
+
+    
+    setTimeout(checkLateArrivalPrediction, 3000);
+    
+    setInterval(checkLateArrivalPrediction, 600000);
+
+    document.getElementById('loadingOverlay').classList.add('hide');
+  }
+
+  
+  function switchPanel(name) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(`panel-${name}`)?.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.textContent.toLowerCase().includes(name.replace('-',' '))) n.classList.add('active');
+    });
+
+    
+    if (name === 'timesheets') loadTimesheets();
+    if (name === 'corrections') loadCorrections();
+    if (name === 'employees') renderEmployees();
+    if (name === 'analytics') loadAnalytics();
+    if (name === 'leaderboard') loadLeaderboard();
+    if (name === 'settings') {
+      loadSettingsUI();
+      
+      setTimeout(() => {
+        const lat = workSettings.workplaceCoords?.lat;
+        const lng = workSettings.workplaceCoords?.lng;
+        initMap(lat, lng);
+        
+        setTimeout(() => map && map.invalidateSize(), 200);
+      }, 150);
+    }
+  }
+
+  
+  let workSettings = { workStartTime:'09:00', workEndTime:'18:00', allowedRadius:200, lateThresholdMinutes:30 };
+  let map = null;
+  let mapMarker = null;
+  let mapCircle = null;
+
+  function initMap(lat, lng) {
+    
+    
+    
+    
+    const centre = [lat || 1.3521, lng || 103.8198]; 
+
+    if (map) {
+      map.remove();
+      map = null;
+      mapMarker = null;
+      mapCircle = null;
+    }
+
+    map = L.map('mapPicker', { zoomControl: true }).setView(centre, 16);
+
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap © CARTO',
+      maxZoom: 19,
+      subdomains: 'abcd'
+    }).addTo(map);
+
+    
+    map.whenReady(() => setTimeout(() => map.invalidateSize(), 100));
+
+    
+    const icon = L.divIcon({
+      html: `<div style="
+        width:32px;height:32px;
+        background:linear-gradient(135deg,#6ee7b7,#3b82f6);
+        border-radius:50% 50% 50% 0;
+        transform:rotate(-45deg);
+        border:2px solid white;
+        box-shadow:0 4px 12px rgba(0,0,0,0.4);
+      "></div>`,
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      className: ''
+    });
+
+    if (lat && lng) {
+      mapMarker = L.marker([lat, lng], { icon, draggable: true }).addTo(map);
+      const radius = parseInt(document.getElementById('setRadius')?.value) || 200;
+      mapCircle = L.circle([lat, lng], {
+        radius,
+        color: '#6ee7b7',
+        fillColor: '#6ee7b7',
+        fillOpacity: 0.08,
+        weight: 1.5
+      }).addTo(map);
+
+      mapMarker.on('dragend', (e) => {
+        const pos = e.target.getLatLng();
+        document.getElementById('setLat').value = pos.lat.toFixed(6);
+        document.getElementById('setLng').value = pos.lng.toFixed(6);
+        updateCircle(pos.lat, pos.lng);
+      });
+    }
+
+    
+    map.on('click', (e) => {
+      const { lat, lng } = e.latlng;
+      document.getElementById('setLat').value = lat.toFixed(6);
+      document.getElementById('setLng').value = lng.toFixed(6);
+      placeMarker(lat, lng);
+    });
+
+    
+    document.getElementById('setRadius')?.addEventListener('input', () => {
+      const lat = parseFloat(document.getElementById('setLat').value);
+      const lng = parseFloat(document.getElementById('setLng').value);
+      if (!isNaN(lat) && !isNaN(lng)) updateCircle(lat, lng);
+    });
+  }
+
+  function placeMarker(lat, lng) {
+    const icon = L.divIcon({
+      html: `<div style="
+        width:32px;height:32px;
+        background:linear-gradient(135deg,#6ee7b7,#3b82f6);
+        border-radius:50% 50% 50% 0;
+        transform:rotate(-45deg);
+        border:2px solid white;
+        box-shadow:0 4px 12px rgba(0,0,0,0.4);
+      "></div>`,
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      className: ''
+    });
+    if (mapMarker) map.removeLayer(mapMarker);
+    mapMarker = L.marker([lat, lng], { icon, draggable: true }).addTo(map);
+    mapMarker.on('dragend', (e) => {
+      const pos = e.target.getLatLng();
+      document.getElementById('setLat').value = pos.lat.toFixed(6);
+      document.getElementById('setLng').value = pos.lng.toFixed(6);
+      updateCircle(pos.lat, pos.lng);
+    });
+    updateCircle(lat, lng);
+  }
+
+  function updateCircle(lat, lng) {
+    const radius = parseInt(document.getElementById('setRadius')?.value) || 200;
+    if (mapCircle) map.removeLayer(mapCircle);
+    mapCircle = L.circle([lat, lng], {
+      radius,
+      color: '#6ee7b7',
+      fillColor: '#6ee7b7',
+      fillOpacity: 0.08,
+      weight: 1.5
+    }).addTo(map);
+  }
+
+  function centreMap() {
+    const lat = parseFloat(document.getElementById('setLat').value);
+    const lng = parseFloat(document.getElementById('setLng').value);
+    if (!isNaN(lat) && !isNaN(lng) && map) {
+      map.setView([lat, lng], 16);
+    } else {
+      showToast('No pin set yet. Click the map or use your location first.', 'warning');
+    }
+  }
+
+  window.centreMap = centreMap;
+
+  async function loadSettings() {
+    try {
+      const snap = await window._getDoc(window._doc(window._db, 'settings', 'company'));
+      if (snap.exists()) workSettings = { ...workSettings, ...snap.data() };
+    } catch(e) {}
+  }
+
+  function loadSettingsUI() {
+    document.getElementById('setWorkStart').value = workSettings.workStartTime || '09:00';
+    document.getElementById('setWorkEnd').value = workSettings.workEndTime || '18:00';
+    document.getElementById('setRadius').value = workSettings.allowedRadius || 200;
+    document.getElementById('setLateThreshold').value = workSettings.lateThresholdMinutes || 30;
+    document.getElementById('setLat').value = workSettings.workplaceCoords?.lat || '';
+    document.getElementById('setLng').value = workSettings.workplaceCoords?.lng || '';
+  }
+
+  async function saveSettings() {
+    const lat = parseFloat(document.getElementById('setLat').value);
+    const lng = parseFloat(document.getElementById('setLng').value);
+    const data = {
+      workStartTime: document.getElementById('setWorkStart').value,
+      workEndTime: document.getElementById('setWorkEnd').value,
+      allowedRadius: parseInt(document.getElementById('setRadius').value),
+      lateThresholdMinutes: parseInt(document.getElementById('setLateThreshold').value),
+      workplaceCoords: (!isNaN(lat) && !isNaN(lng)) ? { lat, lng } : (workSettings.workplaceCoords || null)
+    };
+    try {
+      await window._setDoc(window._doc(window._db, 'settings', 'company'), data);
+      workSettings = data;
+      showToast('✅ Settings saved!', 'success');
+    } catch(e) { showToast('Failed to save settings.', 'error'); }
+  }
+
+  function useMyLocation() {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      document.getElementById('setLat').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('setLng').value = pos.coords.longitude.toFixed(6);
+      showToast('📍 Location captured!', 'success');
+    }, () => showToast('Could not get location.', 'error'));
+  }
+
+  
+  async function loadEmployees() {
+    try {
+      const snap = await window._getDocs(window._collection(window._db, 'users'));
+      allEmployees = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(e => e.role !== 'admin');
+      document.getElementById('statTotal').textContent = allEmployees.length;
+      renderEmployees();
+      populateEmployeeDropdowns();
+    } catch(e) { console.error(e); }
+  }
+
+  function renderEmployees() {
+    const tbody = document.getElementById('employeesBody');
+    if (!allEmployees.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:2rem">No employees registered yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = allEmployees.map(e => `
+      <tr>
+        <td><div style="display:flex;align-items:center;gap:0.6rem">
+          <div class="emp-avatar">${(e.name||'?')[0].toUpperCase()}</div>
+          <div><div style="font-size:0.85rem;font-weight:500">${e.name||'—'}</div></div>
+        </div></td>
+        <td style="color:var(--muted);font-size:0.82rem">${e.email||'—'}</td>
+        <td style="font-size:0.82rem">${e.department||'—'}</td>
+        <td><span class="mode-chip ${e.trackingMode||''}">${modeLabel(e.trackingMode)}</span></td>
+        <td style="color:var(--muted);font-size:0.78rem">${e.createdAt ? new Date(e.createdAt).toLocaleDateString('en-SG') : '—'}</td>
+      </tr>`).join('');
+  }
+
+  function modeLabel(m) {
+    return { photo:'📸 Photo', geo:'📍 Location', both:'📸📍 Both' }[m] || m || '—';
+  }
+
+  function populateEmployeeDropdowns() {
+    const opts = allEmployees.map(e => `<option value="${e.id}">${e.name} (${e.department||'—'})</option>`).join('');
+    document.getElementById('summaryEmployee').innerHTML = '<option value="">— Choose an employee —</option>' + opts;
+    document.getElementById('exportEmployee').innerHTML = '<option value="">All employees</option>' + opts;
+  }
+
+  
+  async function loadDashboard() {
+    const today = getTodayStr();
+    try {
+      const q = window._query(
+        window._collection(window._db, 'timesheets'),
+        window._where('date', '==', today)
+      );
+      const snap = await window._getDocs(q);
+      const shifts = snap.docs.map(d => d.data());
+
+      const present = new Set(shifts.map(s => s.uid)).size;
+      const flagged = shifts.filter(s => s.status === 'flagged').length;
+      const late = shifts.filter(s => s.flags?.includes('late')).length;
+
+      document.getElementById('statPresent').textContent = present;
+      document.getElementById('statFlagged').textContent = flagged;
+      document.getElementById('statLate').textContent = late;
+
+      
+      const shiftByUid = {};
+      shifts.forEach(s => shiftByUid[s.uid] = s);
+
+      const html = allEmployees.length === 0
+        ? '<div class="empty-state"><div class="empty-icon">👥</div>No employees registered yet</div>'
+        : allEmployees.map(e => {
+            const s = shiftByUid[e.id];
+            let statusClass, statusText;
+            if (!s) { statusClass = 'absent'; statusText = 'Absent'; }
+            else if (s.status === 'flagged') { statusClass = 'flagged'; statusText = '🚨 Flagged'; }
+            else if (s.clockOutTime) { statusClass = 'out'; statusText = `Out ${formatTime(new Date(s.clockOutTime))}`; }
+            else { statusClass = 'in'; statusText = `In ${formatTime(new Date(s.clockInTime))}`; }
+
+            return `<div class="employee-row">
+              <div class="emp-info">
+                <div class="emp-avatar">${(e.name||'?')[0].toUpperCase()}</div>
+                <div>
+                  <div class="emp-name">${e.name}</div>
+                  <div class="emp-dept">${e.department||'—'}</div>
+                </div>
+              </div>
+              <span class="emp-status ${statusClass}">${statusText}</span>
+            </div>`;
+          }).join('');
+
+      document.getElementById('attendanceList').innerHTML = html;
+    } catch(e) { console.error(e); }
+  }
+
+  
+  async function loadTimesheets() {
+    const tbody = document.getElementById('timesheetsBody');
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem"><div class="spinner"></div></td></tr>';
+    try {
+      const dateFilter = document.getElementById('filterDate')?.value;
+      const statusFilter = document.getElementById('filterStatus')?.value;
+
+      let q = window._query(window._collection(window._db, 'timesheets'), window._limit(100));
+      if (dateFilter) q = window._query(window._collection(window._db, 'timesheets'), window._where('date','==',dateFilter));
+
+      const snap = await window._getDocs(q);
+      let shifts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      
+      if (statusFilter) shifts = shifts.filter(s => s.status === statusFilter);
+      shifts.sort((a, b) => b.date > a.date ? 1 : -1);
+
+      if (!shifts.length) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem">No records found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = shifts.map(s => {
+        const cin = s.clockInTime ? formatTime(new Date(s.clockInTime)) : '--';
+        const cout = s.clockOutTime ? formatTime(new Date(s.clockOutTime)) : '--';
+        const hrs = s.totalHours != null ? `${s.totalHours}h` : '--';
+        const flags = s.flags?.length ? s.flags.map(f => `<span class="flag-chip">${f}</span>`).join(' ') : '<span style="color:var(--muted);font-size:0.75rem">none</span>';
+        const verdict = s.aiVerdict ? `<span style="font-size:0.72rem;color:${s.aiVerdict.riskLevel==='low'?'var(--accent)':s.aiVerdict.riskLevel==='medium'?'var(--warning)':'var(--danger)'}">● ${s.aiVerdict.riskLevel}</span>` : '—';
+        return `<tr>
+          <td><div style="font-size:0.85rem;font-weight:500">${s.name||'—'}</div><div style="font-size:0.72rem;color:var(--muted)">${s.department||''}</div></td>
+          <td style="font-size:0.82rem">${s.date||'—'}</td>
+          <td>${cin}</td>
+          <td>${cout}</td>
+          <td>${hrs}</td>
+          <td><span class="mode-chip ${s.trackingMode||''}">${modeLabel(s.trackingMode)}</span></td>
+          <td><span class="badge-status badge-${s.status||'incomplete'}">${s.status||'incomplete'}</span></td>
+          <td style="display:flex;flex-wrap:wrap;gap:0.25rem;padding-top:0.7rem">${flags}</td>
+          <td>${verdict}</td>
+        </tr>`;
+      }).join('');
+    } catch(e) { console.error(e); tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--danger);padding:2rem">Error loading data</td></tr>'; }
+  }
+
+  function clearFilters() {
+    document.getElementById('filterDate').value = '';
+    document.getElementById('filterStatus').value = '';
+    loadTimesheets();
+  }
+
+  
+  async function loadCorrections() {
+    const tbody = document.getElementById('correctionsBody');
+    try {
+      const snap = await window._getDocs(window._collection(window._db, 'corrections'));
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => b.createdAt > a.createdAt ? 1 : -1);
+
+      const pending = items.filter(i => i.status === 'pending').length;
+      const badge = document.getElementById('corrBadge');
+      badge.textContent = pending;
+      badge.classList.toggle('show', pending > 0);
+
+      if (!items.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">No correction requests yet</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = items.map(c => `
+        <tr>
+          <td><div style="font-size:0.85rem;font-weight:500">${c.name||'—'}</div><div style="font-size:0.72rem;color:var(--muted)">${c.department||''}</div></td>
+          <td style="font-size:0.82rem">${c.date||'—'}</td>
+          <td>${c.requestedClockIn||'—'}</td>
+          <td>${c.requestedClockOut||'—'}</td>
+          <td style="font-size:0.82rem;max-width:200px">${c.reason||'—'}</td>
+          <td><span class="badge-status badge-${c.status||'pending'}">${c.status||'pending'}</span></td>
+          <td>
+            ${c.status === 'pending' ? `
+              <div style="display:flex;gap:0.4rem">
+                <button class="btn-approve" onclick="resolveCorrection('${c.id}','approved')">✅ Approve</button>
+                <button class="btn-reject" onclick="resolveCorrection('${c.id}','rejected')">❌ Reject</button>
+              </div>` : '<span style="color:var(--muted);font-size:0.78rem">Done</span>'}
+          </td>
+        </tr>`).join('');
+    } catch(e) { console.error(e); }
+  }
+
+  async function resolveCorrection(id, status) {
+    try {
+      await window._updateDoc(window._doc(window._db, 'corrections', id), { status });
+      showToast(`Correction ${status}!`, status === 'approved' ? 'success' : 'error');
+      loadCorrections();
+    } catch(e) { showToast('Failed to update correction.', 'error'); }
+  }
+
+  
+  
+  
+  
+  
+  
+  
+  function listenAlerts() {
+    const q = window._query(
+      window._collection(window._db, 'alerts'),
+      window._where('seen', '==', false)
+    );
+    window._onSnapshot(q, (snap) => {
+      const alerts = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => b.createdAt > a.createdAt ? 1 : -1);
+
+      const unseen = alerts.filter(a => !a.seen).length;
+      const badge = document.getElementById('alertsBadge');
+      badge.textContent = unseen;
+      badge.classList.toggle('show', unseen > 0);
+      document.getElementById('bellDot').classList.toggle('show', unseen > 0);
+
+      
+      snap.docChanges().forEach(change => {
+        if (change.type === 'added') {
+          const alert = { id: change.doc.id, ...change.doc.data() };
+          if (!alert.seen && !alert.emailSent) {
+            sendFlaggedEmail(alert);
+            
+            window._updateDoc(window._doc(window._db, 'alerts', alert.id), { emailSent: true });
+          }
+        }
+      });
+
+      const container = document.getElementById('alertsList');
+      if (!alerts.length) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div>No alerts — everything looks good!</div>';
+        return;
+      }
+
+      container.innerHTML = alerts.map(a => `
+        <div class="alert-card ${a.seen ? 'seen' : ''}">
+          <div class="alert-icon">${a.type === 'early_clockout' ? '⏰' : '🚨'}</div>
+          <div style="flex:1">
+            <div class="alert-msg">${a.message || 'Flagged clock-out event'}</div>
+            <div class="alert-time">${a.date} • ${formatTime(new Date(a.clockOutTime))}</div>
+            <div class="alert-flags">
+              ${(a.flags||[]).map(f => `<span class="flag-chip">${f}</span>`).join('')}
+            </div>
+          </div>
+          ${!a.seen ? `<button class="btn-mark-seen" onclick="markSeen('${a.id}')">Mark seen</button>` : ''}
+        </div>`).join('');
+    });
+  }
+
+  async function markSeen(id) {
+    await window._updateDoc(window._doc(window._db, 'alerts', id), { seen: true });
+  }
+
+  async function markAllSeen() {
+    const q = window._query(window._collection(window._db, 'alerts'), window._where('seen','==',false));
+    const snap = await window._getDocs(q);
+    await Promise.all(snap.docs.map(d => window._updateDoc(d.ref, { seen: true })));
+    showToast('All alerts marked as seen.', 'success');
+  }
+
+  
+  
+  
+  
+  
+  
+  async function generateSummary() {
+    const uid = document.getElementById('summaryEmployee').value;
+    const weekStart = document.getElementById('summaryWeek').value;
+    if (!uid || !weekStart) return showToast('Please select an employee and week.', 'error');
+
+    const employee = allEmployees.find(e => e.id === uid);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    const weekEndStr = weekEnd.toLocaleDateString('en-CA');
+
+    document.getElementById('summaryThinking').style.display = 'flex';
+    document.getElementById('summaryBox').style.display = 'none';
+
+    try {
+      
+      const q = window._query(
+        window._collection(window._db, 'timesheets'),
+        window._where('uid', '==', uid)
+      );
+      const snap = await window._getDocs(q);
+      const shifts = snap.docs
+        .map(d => d.data())
+        .filter(s => s.date >= weekStart && s.date <= weekEndStr)
+        .sort((a, b) => a.date > b.date ? 1 : -1);
+
+      if (!shifts.length) {
+        document.getElementById('summaryThinking').style.display = 'none';
+        document.getElementById('summaryBox').style.display = 'block';
+        document.getElementById('summaryBox').textContent = `No shift data found for ${employee?.name} in the week of ${weekStart}.`;
+        return;
+      }
+
+      const shiftText = shifts.map(s => {
+        const cin = s.clockInTime ? formatTime(new Date(s.clockInTime)) : 'did not clock in';
+        const cout = s.clockOutTime ? formatTime(new Date(s.clockOutTime)) : 'did not clock out';
+        const hrs = s.totalHours != null ? `${s.totalHours}h worked` : 'hours unknown';
+        const flags = s.flags?.length ? `Flags: ${s.flags.join(', ')}` : 'No flags';
+        const status = `Status: ${s.status || 'incomplete'}`;
+        return `${s.date}: Clocked in ${cin}, clocked out ${cout}, ${hrs}. ${flags}. ${status}.`;
+      }).join('\n');
+
+      const prompt = `You are an HR assistant writing a weekly attendance summary for a manager.
+
+Employee: ${employee?.name}
+Department: ${employee?.department}
+Week: ${weekStart} to ${weekEndStr}
+Tracking mode: ${employee?.trackingMode}
+
+Shift data:
+${shiftText}
+
+Write a concise 3-5 sentence plain-English summary covering:
+- Overall attendance pattern this week
+- Any punctuality issues or notable flags
+- Hours worked vs expected (work day is ${workSettings.workStartTime} to ${workSettings.workEndTime})
+- A brief recommendation for the manager
+
+Write professionally but simply. Do not use bullet points. Do not start with "Here is" or "Summary:".`;
+
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.4,
+          max_tokens: 300
+        })
+      });
+
+      const data = await res.json();
+      const summary = data.choices?.[0]?.message?.content || 'Could not generate summary.';
+      document.getElementById('summaryBox').textContent = summary;
+      document.getElementById('summaryBox').style.display = 'block';
+    } catch(e) {
+      document.getElementById('summaryBox').textContent = 'Error generating summary. Please try again.';
+      document.getElementById('summaryBox').style.display = 'block';
+      console.error(e);
+    } finally {
+      document.getElementById('summaryThinking').style.display = 'none';
+    }
+  }
+
+  
+  async function exportCSV() {
+    const from = document.getElementById('exportFrom').value;
+    const to = document.getElementById('exportTo').value;
+    const empFilter = document.getElementById('exportEmployee').value;
+    const flaggedOnly = document.getElementById('exportFlaggedOnly').checked;
+
+    if (!from || !to) return showToast('Please select a date range.', 'error');
+
+    try {
+      let q = window._query(window._collection(window._db, 'timesheets'));
+      const snap = await window._getDocs(q);
+      let shifts = snap.docs.map(d => d.data())
+        .filter(s => s.date >= from && s.date <= to);
+
+      if (empFilter) shifts = shifts.filter(s => s.uid === empFilter);
+      if (flaggedOnly) shifts = shifts.filter(s => s.status === 'flagged');
+      shifts.sort((a, b) => a.date > b.date ? 1 : -1);
+
+      const headers = ['Name','Department','Date','Clock In','Clock Out','Total Hours','Break (min)','Status','Flags','AI Risk','Mode'];
+      const rows = shifts.map(s => [
+        s.name||'',
+        s.department||'',
+        s.date||'',
+        s.clockInTime ? formatTime(new Date(s.clockInTime)) : '',
+        s.clockOutTime ? formatTime(new Date(s.clockOutTime)) : '',
+        s.totalHours != null ? s.totalHours : '',
+        s.totalBreakMs ? Math.round(s.totalBreakMs/60000) : '0',
+        s.status||'',
+        (s.flags||[]).join('; '),
+        s.aiVerdict?.riskLevel||'',
+        s.trackingMode||''
+      ]);
+
+      const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `timesheet_${from}_to_${to}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      showToast(`✅ Exported ${shifts.length} records`, 'success');
+    } catch(e) { showToast('Export failed.', 'error'); console.error(e); }
+  }
+
+  
+  async function handleLogout() {
+    await window._signOut(window._auth);
+    window.location.href = 'index.html';
+  }
+
+  
+  function getTodayStr() { return new Date().toLocaleDateString('en-CA'); }
+  function formatTime(date) { return date.toLocaleTimeString('en-SG', { hour:'2-digit', minute:'2-digit' }); }
+
+  function showToast(msg, type = 'info') {
+    const colors = { success:'var(--accent)', error:'var(--danger)', warning:'var(--warning)', info:'var(--accent2)' };
+    const el = document.createElement('div');
+    el.className = 'toast-item';
+    el.style.borderColor = colors[type] || 'var(--border)';
+    el.textContent = msg;
+    document.getElementById('toastWrap').appendChild(el);
+    setTimeout(() => el.remove(), 5000);
+  }
+
+  
+  window.switchPanel = switchPanel;
+  window.saveSettings = saveSettings;
+  window.useMyLocation = useMyLocation;
+  window.loadTimesheets = loadTimesheets;
+  window.clearFilters = clearFilters;
+  window.resolveCorrection = resolveCorrection;
+  window.markSeen = markSeen;
+  window.markAllSeen = markAllSeen;
+  window.generateSummary = generateSummary;
+  window.exportCSV = exportCSV;
+  window.handleLogout = handleLogout;
+
+  
+  
+  
+  
+  function toggleTheme() {
+    const isLight = document.body.classList.toggle('light');
+    document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }
+  window.toggleTheme = toggleTheme;
+
+  
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('themeBtn').textContent = '☀️';
+  }
+
+  
+  
+  
+  
+  let chartsInitialised = false;
+  let chartHoursObj = null;
+  let chartStatusObj = null;
+  let chartAttObj = null;
+
+  async function loadAnalytics() {
+    if (chartsInitialised) return;
+    chartsInitialised = true;
+
+    
+    const days = [];
+    const labels = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days.push(d.toLocaleDateString('en-CA'));
+      labels.push(d.toLocaleDateString('en-SG', { weekday:'short', day:'numeric' }));
+    }
+
+    try {
+      const snap = await window._getDocs(window._collection(window._db, 'timesheets'));
+      const shifts = snap.docs.map(d => d.data());
+
+      
+      const hoursPerDay = days.map(date => {
+        const dayShifts = shifts.filter(s => s.date === date && s.totalHours);
+        if (!dayShifts.length) return 0;
+        return +(dayShifts.reduce((a, s) => a + s.totalHours, 0) / dayShifts.length).toFixed(1);
+      });
+
+      
+      const total = allEmployees.length || 1;
+      const attRate = days.map(date => {
+        const present = new Set(shifts.filter(s => s.date === date).map(s => s.uid)).size;
+        return Math.round(present / total * 100);
+      });
+
+      
+      const normal = shifts.filter(s => s.status === 'normal').length;
+      const suspicious = shifts.filter(s => s.status === 'suspicious').length;
+      const flagged = shifts.filter(s => s.status === 'flagged').length;
+      const incomplete = shifts.filter(s => !s.status || s.status === 'incomplete').length;
+
+      const chartDefaults = {
+        responsive: true,
+        plugins: { legend: { labels: { color: getComputedStyle(document.body).getPropertyValue('--text').trim() || '#e2e8f0', font: { family: 'DM Sans' } } } },
+        scales: {
+          x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        }
+      };
+
+      
+      chartHoursObj = new Chart(document.getElementById('chartHours'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{ label: 'Avg Hours Worked', data: hoursPerDay,
+            backgroundColor: 'rgba(110,231,183,0.3)', borderColor: '#6ee7b7',
+            borderWidth: 2, borderRadius: 6 }]
+        },
+        options: { ...chartDefaults, plugins: { ...chartDefaults.plugins } }
+      });
+
+      
+      chartStatusObj = new Chart(document.getElementById('chartStatus'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Normal', 'Suspicious', 'Flagged', 'Incomplete'],
+          datasets: [{ data: [normal, suspicious, flagged, incomplete],
+            backgroundColor: ['rgba(110,231,183,0.7)','rgba(251,191,36,0.7)','rgba(248,113,113,0.7)','rgba(100,116,139,0.4)'],
+            borderColor: ['#6ee7b7','#fbbf24','#f87171','#64748b'], borderWidth: 2 }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'DM Sans' }, boxWidth: 12 } } } }
+      });
+
+      
+      chartAttObj = new Chart(document.getElementById('chartAttendance'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{ label: '% Present', data: attRate,
+            borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)',
+            tension: 0.4, fill: true, pointBackgroundColor: '#3b82f6', pointRadius: 4 }]
+        },
+        options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, min: 0, max: 100, ticks: { color: '#64748b', callback: v => v + '%' } } } }
+      });
+
+    } catch(e) { console.error('Analytics error:', e); }
+  }
+
+  
+  
+  
+  
+  async function loadLeaderboard() {
+    const container = document.getElementById('leaderboardList');
+    try {
+      const snap = await window._getDocs(window._collection(window._db, 'timesheets'));
+      const shifts = snap.docs.map(d => d.data());
+
+      
+      const empStats = {};
+      allEmployees.forEach(e => {
+        empStats[e.id] = { name: e.name, dept: e.department, total: 0, onTime: 0, flags: 0, streak: 0 };
+      });
+
+      const [wh, wm] = (workSettings.workStartTime || '09:00').split(':').map(Number);
+
+      shifts.forEach(s => {
+        if (!empStats[s.uid]) return;
+        empStats[s.uid].total++;
+        if (s.flags?.length) empStats[s.uid].flags += s.flags.length;
+        if (s.clockInTime) {
+          const cin = new Date(s.clockInTime);
+          const scheduled = new Date(cin);
+          scheduled.setHours(wh, wm + (workSettings.lateThresholdMinutes || 30), 0, 0);
+          if (cin <= scheduled) empStats[s.uid].onTime++;
+        }
+      });
+
+      
+      const ranked = Object.entries(empStats)
+        .filter(([, s]) => s.total > 0)
+        .map(([uid, s]) => ({ uid, ...s, rate: Math.round(s.onTime / s.total * 100) }))
+        .sort((a, b) => b.rate - a.rate);
+
+      if (!ranked.length) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div>No shift data yet to rank</div>';
+        return;
+      }
+
+      const medals = ['🥇', '🥈', '🥉'];
+      const rankClasses = ['gold', 'silver', 'bronze'];
+
+      container.innerHTML = ranked.map((e, i) => `
+        <div class="lb-row">
+          <div class="lb-rank ${rankClasses[i] || ''}">${medals[i] || `#${i+1}`}</div>
+          <div class="lb-bar-wrap">
+            <div class="lb-name">${e.name} <span style="font-size:0.72rem;color:var(--muted)">${e.dept||''}</span></div>
+            <div class="lb-stats">${e.onTime}/${e.total} shifts on time • ${e.flags} flag${e.flags !== 1 ? 's' : ''}</div>
+            <div class="lb-bar-bg"><div class="lb-bar-fill" style="width:${e.rate}%"></div></div>
+          </div>
+          <div class="lb-pct">${e.rate}%</div>
+        </div>`).join('');
+
+    } catch(e) { console.error('Leaderboard error:', e); container.innerHTML = '<div class="empty-state">Error loading leaderboard</div>'; }
+  }
+
+  
+  
+  
+  
+  
+  const EMAILJS_SERVICE = 'YOUR_EMAILJS_SERVICE_ID';
+  const EMAILJS_TEMPLATE = 'YOUR_EMAILJS_TEMPLATE_ID';
+  const EMAILJS_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
+  const ADMIN_EMAIL_ADDR = 'YOUR_ADMIN_EMAIL';
+
+  async function sendFlaggedEmail(alertData) {
+    try {
+      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+        employee_name: alertData.name || 'Unknown',
+        department: alertData.department || '—',
+        date: alertData.date || '—',
+        time: alertData.clockOutTime ? new Date(alertData.clockOutTime).toLocaleTimeString('en-SG', { hour:'2-digit', minute:'2-digit' }) : '—',
+        flag_type: (alertData.flags || []).join(', ') || '—',
+        risk_level: alertData.riskLevel || 'high',
+        reason: alertData.message || 'Flagged clock-out detected',
+        admin_url: window.location.href
+      });
+      console.log('✅ Alert email sent to admin');
+    } catch(e) {
+      console.error('EmailJS error:', e);
+    }
+  }
+
+  
+  
+  
+  
+  
+  
+  
+  async function checkLateArrivalPrediction() {
+    if (!allEmployees.length) return;
+    const today = getTodayStr();
+    const [wh, wm] = (workSettings.workStartTime || '09:00').split(':').map(Number);
+    const workStartMin = wh * 60 + wm;
+    const threshold = workSettings.lateThresholdMinutes || 30;
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+
+    
+    if (nowMin < workStartMin + 15) return;
+
+    
+    const todaySnap = await window._getDocs(window._query(
+      window._collection(window._db, 'timesheets'),
+      window._where('date', '==', today)
+    ));
+    const clockedInUids = new Set(todaySnap.docs.map(d => d.data().uid));
+    const absentees = allEmployees.filter(e => !clockedInUids.has(e.id));
+    if (!absentees.isEmpty) return;
+
+    for (const emp of absentees.slice(0, 3)) { 
+      try {
+        
+        const histSnap = await window._getDocs(window._query(
+          window._collection(window._db, 'timesheets'),
+          window._where('uid', '==', emp.id)
+        ));
+        const history = histSnap.docs.map(d => d.data())
+          .filter(s => s.clockInTime)
+          .slice(-14);
+
+        if (history.length < 3) continue; 
+
+        
+        const cinMins = history.map(s => {
+          const t = new Date(s.clockInTime);
+          return t.getHours() * 60 + t.getMinutes();
+        });
+        const mean = cinMins.reduce((a, b) => a + b, 0) / cinMins.length;
+        const sd = Math.sqrt(cinMins.reduce((a, b) => a + (b - mean) ** 2, 0) / cinMins.length);
+
+        const prompt = `An employee named ${emp.name} has not clocked in yet. 
+Work starts at ${workSettings.workStartTime}. Current time: ${now.toLocaleTimeString('en-SG')}.
+Their average clock-in time over the last ${history.length} days: ${Math.floor(mean/60)}:${String(Math.round(mean%60)).padStart(2,'0')}.
+Standard deviation: ${sd.toFixed(1)} minutes (lower = more consistent).
+Late threshold: ${threshold} minutes after start time.
+
+In one short sentence, predict: will they likely be late today, or might they still arrive on time? Be direct.`;
+
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+          body: JSON.stringify({ model: 'llama-3.1-8b-instant', messages: [{ role: 'user', content: prompt }], max_tokens: 80, temperature: 0.3 })
+        });
+        const data = await res.json();
+        const prediction = data.choices?.[0]?.message?.content || '';
+        if (prediction) showToast(`🔔 ${emp.name}: ${prediction}`, 'warning');
+      } catch(e) { console.error('Prediction error:', e); }
+    }
+  }
+
+  
+  
+  const _originalListenAlerts = window._onSnapshot;
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('YOUR_EMAILJS_PUBLIC_KEY');</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
