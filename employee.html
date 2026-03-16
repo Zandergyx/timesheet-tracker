@@ -398,7 +398,6 @@
       .btn-row { flex-direction: column; }
     }
   </style>
-  <script src="config.js"></script>
 </head>
 <body>
 
@@ -569,7 +568,7 @@
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>emailjs.init(CONFIG.emailjs.publicKey);</script>
+<script>emailjs.init('YOUR_EMAILJS_PUBLIC_KEY');</script>
 
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/dist/face-api.js"></script>
 
@@ -626,8 +625,8 @@
 
 <script>
   
-  const GROQ_KEY = CONFIG.groq;
-  const DEV_EMAILS = CONFIG.devEmails;
+  const GROQ_KEY = "YOUR_GROQ_API_KEY";
+  const DEV_EMAILS = ['YOUR_DEV_EMAIL_1', 'YOUR_DEV_EMAIL_2'];
 
   let userData = null;
   let todayShift = null;       
@@ -778,7 +777,7 @@
   async function devTestEmail() {
     showToast('📧 Sending test email...', 'info');
     try {
-      await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, {
+      await emailjs.send('YOUR_EMAILJS_SERVICE_ID', 'YOUR_EMAILJS_TEMPLATE_ID', {
         employee_name: userData?.name || 'Zander (Dev)',
         department: userData?.department || 'Developer',
         date: new Date().toLocaleDateString('en-SG'),
@@ -1205,7 +1204,7 @@
         // Send email to the company admin, not a hardcoded address
         if (companyAdminEmail) {
           try {
-            await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, {
+            await emailjs.send('YOUR_EMAILJS_SERVICE_ID', 'YOUR_EMAILJS_TEMPLATE_ID', {
               employee_name: userData.name,
               department: userData.department || '—',
               date: getTodayStr(),

@@ -75,7 +75,6 @@
     @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
     @keyframes spin { to{transform:rotate(360deg)} }
   </style>
-  <script src="config.js"></script>
 </head>
 <body>
 <div class="orb orb-1"></div>
@@ -270,7 +269,7 @@
 </script>
 
 <script>
-  const DEV_EMAILS = CONFIG.devEmails;
+  const DEV_EMAILS = ['YOUR_DEV_EMAIL_1', 'YOUR_DEV_EMAIL_2'];
 
   function switchRole(role) {
     const isEmp = role === 'employee';

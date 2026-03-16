@@ -439,7 +439,6 @@
       .stat-grid { grid-template-columns: repeat(2,1fr); }
     }
   </style>
-  <script src="config.js"></script>
 </head>
 <body>
 
@@ -856,7 +855,7 @@
   window._updateDoc = updateDoc; window._orderBy = orderBy;
   window._limit = limit; window._onSnapshot = onSnapshot;
 
-  const DEV_EMAILS = CONFIG.devEmails;
+  const DEV_EMAILS = ['YOUR_DEV_EMAIL_1', 'YOUR_DEV_EMAIL_2'];
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'index.html'; return; }
@@ -880,7 +879,7 @@
 </script>
 
 <script>
-  const GROQ_KEY = CONFIG.groq;
+  const GROQ_KEY = "YOUR_GROQ_API_KEY";
   let allEmployees = [];
   let allTempvres = [];
 
@@ -1832,7 +1831,7 @@ In one short sentence, predict: will they likely be late today, or might they st
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>emailjs.init(CONFIG.emailjs.publicKey);</script>
+<script>emailjs.init('YOUR_EMAILJS_PUBLIC_KEY');</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
