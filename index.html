@@ -74,6 +74,20 @@
     @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
     @keyframes spin { to{transform:rotate(360deg)} }
+
+    @media (max-width: 480px) {
+      .wrapper { padding: 1rem; }
+      .card { padding: 1.25rem; border-radius: 16px; }
+      .logo { margin-bottom: 1.25rem; }
+      .logo h1 { font-size: 1.3rem; }
+      .logo-icon { width: 44px; height: 44px; }
+      .role-btn { font-size: 0.75rem; padding: 0.4rem 0.2rem; }
+      .tab-btn { font-size: 0.78rem; }
+      .btn-main { padding: 0.7rem; font-size: 0.85rem; }
+      .form-control, .form-select { font-size: 0.85rem !important; padding: 0.6rem 0.8rem !important; }
+      .admin-notice { font-size: 0.75rem; padding: 0.5rem 0.75rem; }
+      body { align-items: flex-start; padding-top: 1rem; }
+    }
   </style>
 </head>
 <body>

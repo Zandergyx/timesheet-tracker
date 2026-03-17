@@ -433,10 +433,37 @@
     .lb-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.8s ease; }
     .lb-pct { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; color: var(--accent); flex-shrink: 0; }
 
-    
     @media (max-width: 768px) {
       .sidebar { display: none; }
       .stat-grid { grid-template-columns: repeat(2,1fr); }
+      .main { padding: 1rem; }
+      .card { padding: 1.1rem; border-radius: 14px; }
+      .navbar { padding: 0.7rem 1rem; }
+      .nav-title { font-size: 0.95rem; }
+      #companyBadge { display: none; }
+      .page-title { font-size: 1.2rem; }
+      .data-table { font-size: 0.75rem; }
+      .data-table th { font-size: 0.65rem; padding: 0.4rem 0.5rem; }
+      .data-table td { padding: 0.5rem 0.5rem; }
+      .stat-val { font-size: 1.5rem; }
+      .alert-card { flex-direction: column; gap: 0.5rem; }
+      .btn-mark-seen { margin-left: 0; width: 100%; }
+      .form-control, .form-select { font-size: 0.85rem !important; }
+      .btn-primary-action, .btn-secondary-action { font-size: 0.8rem; padding: 0.5rem 0.85rem; }
+      .ai-summary-box { font-size: 0.8rem; }
+      #mapPicker { height: 220px; }
+    }
+
+    @media (max-width: 480px) {
+      .stat-grid { grid-template-columns: repeat(2,1fr); gap: 0.6rem; }
+      .stat-val { font-size: 1.3rem; }
+      .stat-lbl { font-size: 0.65rem; }
+      .stat-card { padding: 0.85rem; }
+      .navbar { flex-wrap: wrap; gap: 0.5rem; }
+      .admin-badge { font-size: 0.62rem; }
+      .page-sub { font-size: 0.78rem; }
+      .lb-row { gap: 0.5rem; }
+      .lb-pct { font-size: 0.85rem; }
     }
   </style>
 </head>
@@ -828,6 +855,18 @@
 </div>
 
 <div class="toast-wrap" id="toastWrap"></div>
+
+<!-- Mobile bottom nav -->
+<div id="mobileNav" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(17,17,24,0.97);border-top:1px solid var(--border);backdrop-filter:blur(12px);padding:0.5rem 0.25rem;justify-content:space-around;align-items:center;">
+  <button onclick="switchPanel('dashboard')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><span style="font-size:1.2rem">📊</span>Dashboard</button>
+  <button onclick="switchPanel('alerts')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><span style="font-size:1.2rem">🚨</span>Alerts</button>
+  <button onclick="switchPanel('timesheets')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><span style="font-size:1.2rem">🕐</span>Timesheets</button>
+  <button onclick="switchPanel('employees')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><span style="font-size:1.2rem">👥</span>Employees</button>
+  <button onclick="switchPanel('settings')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><span style="font-size:1.2rem">⚙️</span>Settings</button>
+</div>
+<style>
+  @media (max-width: 768px) { #mobileNav { display:flex !important; } .main { padding-bottom:5rem; } }
+</style>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
