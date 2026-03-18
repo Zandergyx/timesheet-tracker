@@ -419,6 +419,288 @@
       .stat-value { font-size: 1rem; }
       .nav-logo-icon { width: 28px; height: 28px; }
     }
+
+    /* ═══════════════════════════════════════════
+       UI POLISH — animations, hover states, depth
+    ═══════════════════════════════════════════ */
+
+    /* Smooth transitions on all interactive elements */
+    *, *::before, *::after { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+    /* Page load stagger animation */
+    @keyframes staggerIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(110,231,183,0); }
+      50%       { box-shadow: 0 0 16px 2px rgba(110,231,183,0.12); }
+    }
+    @keyframes borderGlow {
+      0%, 100% { border-color: var(--border); }
+      50%       { border-color: rgba(110,231,183,0.35); }
+    }
+
+    /* Cards — glass depth effect */
+    .card {
+      background: linear-gradient(145deg, rgba(30,30,46,0.6) 0%, rgba(22,22,31,1) 100%) !important;
+      backdrop-filter: blur(2px);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(110,231,183,0.07) !important;
+      border-color: rgba(110,231,183,0.15) !important;
+    }
+
+    /* Stat cards — extra hover lift */
+    .stat-card {
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(110,231,183,0.04), transparent);
+      transition: left 0.5s ease;
+    }
+    .stat-card:hover::before { left: 100%; }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(110,231,183,0.2) !important;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4) !important;
+    }
+
+    /* Nav items — smooth indicator slide */
+    .nav-item {
+      position: relative;
+      transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease !important;
+    }
+    .nav-item::after {
+      content: '';
+      position: absolute; left: 0; top: 50%;
+      transform: translateY(-50%) scaleY(0);
+      width: 2px; height: 60%;
+      background: var(--accent);
+      border-radius: 0 2px 2px 0;
+      transition: transform 0.2s ease;
+    }
+    .nav-item:hover::after { transform: translateY(-50%) scaleY(0.6); }
+    .nav-item.active::after { transform: translateY(-50%) scaleY(1); }
+
+    /* Buttons — smooth press effect */
+    .btn-primary-action, .btn-secondary-action, .btn-danger-action,
+    .btn-approve, .btn-reject, .btn-main {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .btn-primary-action:active, .btn-main:active { transform: scale(0.97) translateY(0) !important; }
+    .btn-secondary-action:active, .btn-danger-action:active { transform: scale(0.97) !important; }
+
+    /* Form inputs — glow on focus */
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 0 3px rgba(110,231,183,0.12), 0 2px 8px rgba(0,0,0,0.2) !important;
+      transform: none;
+    }
+
+    /* Table rows — smooth hover */
+    .data-table tr { transition: background 0.15s ease; }
+    .data-table tr:hover td { background: rgba(110,231,183,0.03) !important; }
+
+    /* Badge status — subtle glow */
+    .badge-flagged { box-shadow: 0 0 8px rgba(248,113,113,0.2); }
+    .badge-suspicious { box-shadow: 0 0 8px rgba(251,191,36,0.15); }
+
+    /* Employee rows — hover lift */
+    .employee-row {
+      transition: background 0.15s ease, transform 0.15s ease;
+      border-radius: 8px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      margin: 0 -0.5rem;
+    }
+    .employee-row:hover { background: rgba(110,231,183,0.03); }
+
+    /* Alert cards — slide in */
+    .alert-card {
+      transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease !important;
+    }
+    .alert-card:hover { border-color: rgba(248,113,113,0.4) !important; }
+
+    /* Sidebar — subtle gradient background */
+    .sidebar {
+      background: linear-gradient(180deg, rgba(17,17,24,0.95) 0%, rgba(14,14,20,0.98) 100%) !important;
+    }
+
+    /* Navbar — refined glass */
+    .navbar {
+      background: rgba(17,17,24,0.92) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      box-shadow: 0 1px 0 rgba(110,231,183,0.06) !important;
+    }
+
+    /* Page title — gradient text */
+    .page-title {
+      background: linear-gradient(135deg, var(--text) 60%, rgba(110,231,183,0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Card title — refined */
+    .card-title {
+      letter-spacing: 0.08em;
+      font-size: 0.72rem !important;
+    }
+
+    /* Panel animations — stagger on switch */
+    .panel.active > * {
+      animation: staggerIn 0.35s ease both;
+    }
+    .panel.active > *:nth-child(2) { animation-delay: 0.05s; }
+    .panel.active > *:nth-child(3) { animation-delay: 0.1s; }
+    .panel.active > *:nth-child(4) { animation-delay: 0.15s; }
+
+    /* Loading overlay — smoother spinner */
+    .spinner {
+      border-radius: 50%;
+      animation: spin 0.75s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+    }
+
+    /* Leaderboard rows */
+    .lb-row {
+      transition: background 0.15s ease;
+      border-radius: 8px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      margin: 0 -0.5rem;
+    }
+    .lb-row:hover { background: rgba(110,231,183,0.03); }
+
+    /* Bell alert dot — breathing animation */
+    .bell-dot.show { animation: glowPulse 2s ease infinite !important; }
+
+    /* Tutorial float card — more refined */
+    .tutorial-float {
+      backdrop-filter: blur(12px) !important;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(110,231,183,0.2) !important;
+    }
+
+    /* Mode chips — subtle glow */
+    .mode-chip.photo { box-shadow: 0 0 8px rgba(110,231,183,0.1); }
+    .mode-chip.geo { box-shadow: 0 0 8px rgba(59,130,246,0.1); }
+    .mode-chip.both { box-shadow: 0 0 8px rgba(251,191,36,0.1); }
+
+    /* Scrollbar — even thinner */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(110,231,183,0.15); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(110,231,183,0.3); }
+
+    /* Clock display — subtle glow */
+    .clock-time {
+      text-shadow: 0 0 40px rgba(110,231,183,0.08);
+      transition: text-shadow 0.3s ease;
+    }
+    /* Status badge animations */
+    .shift-status.in { animation: borderGlow 3s ease infinite; }
+    /* Progress bar fill — smooth */
+    .progress-bar-fill { transition: width 0.8s cubic-bezier(0.4,0,0.2,1) !important; }
+    /* Geo distance — color transition */
+    .geo-distance { transition: color 0.3s ease !important; }
+    /* Camera wrap — reveal animation */
+    .camera-wrap.show { animation: staggerIn 0.4s ease both; }
+    /* Liveness prompt — attention animation */
+    .liveness-prompt.show { animation: borderGlow 2s ease infinite; }
+    /* History table — striped */
+    .history-table tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+    /* Correction form card */
+    .card:last-child { border-color: rgba(59,130,246,0.12) !important; }
+    /* Clock buttons — stronger hover */
+    .btn-clock-in:hover { box-shadow: 0 12px 32px rgba(110,231,183,0.35) !important; }
+    .btn-clock-out:hover { box-shadow: 0 12px 32px rgba(248,113,113,0.35) !important; }
+    .btn-break:hover { box-shadow: 0 12px 32px rgba(251,191,36,0.3) !important; }
+    /* Stat boxes — inner glow on active shift */
+    .stat-box { transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+    .stat-box:hover { border-color: rgba(110,231,183,0.15) !important; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+    /* Toast slide */
+    .toast-item { border-left-width: 3px !important; }
+    /* Navbar mode badge */
+    .mode-badge { transition: all 0.3s ease; }
+  
+    /* Clock font — use a more distinctive monospace */
+    .clock-time {
+      font-family: 'Syne', monospace !important;
+      font-size: 2.4rem !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.04em !important;
+      color: var(--text) !important;
+    }
+    .clock-date { color: rgba(100,116,139,0.7) !important; font-size: 0.8rem !important; }
+
+    /* Stat boxes — more compact, accent top border */
+    .stat-box {
+      border-radius: 10px !important;
+      padding: 0.85rem !important;
+      background: rgba(255,255,255,0.03) !important;
+      border-color: rgba(255,255,255,0.06) !important;
+    }
+    .stat-value {
+      font-size: 1.25rem !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.03em !important;
+    }
+    .stat-label { font-size: 0.68rem !important; letter-spacing: 0.06em !important; }
+
+    /* Shift status badge — tighter */
+    .shift-status { font-size: 0.75rem !important; padding: 0.25rem 0.7rem !important; gap: 0.35rem !important; }
+
+    /* Progress bar — thinner, more elegant */
+    .progress-bar-bg { height: 4px !important; border-radius: 2px !important; }
+    .progress-label { font-size: 0.7rem !important; }
+
+    /* Card titles — refined */
+    .card-title { font-size: 0.68rem !important; letter-spacing: 0.1em !important; color: rgba(100,116,139,0.7) !important; }
+
+    /* Cards — subtle */
+    .card { border-color: rgba(255,255,255,0.06) !important; border-radius: 14px !important; }
+
+    /* Clock button — less rounded */
+    .btn-clock { border-radius: 10px !important; font-size: 0.875rem !important; padding: 0.8rem !important; }
+
+    /* Liveness prompt */
+    .liveness-prompt { border-radius: 8px !important; font-size: 0.82rem !important; }
+    .liveness-big { font-size: 2rem !important; }
+
+    /* History table — tighter rows */
+    .history-table td, .history-table th { padding: 0.55rem 0.65rem !important; }
+    .history-table { font-size: 0.82rem !important; }
+    .badge-status { font-size: 0.66rem !important; padding: 0.18rem 0.5rem !important; }
+
+    /* Geo status */
+    .geo-distance { font-size: 1.5rem !important; font-weight: 800 !important; }
+    .geo-label { font-size: 0.78rem !important; }
+    .geo-icon { font-size: 1.8rem !important; margin-bottom: 0.4rem !important; }
+
+    /* Navbar */
+    .nav-title { font-size: 1rem !important; letter-spacing: -0.02em !important; }
+    .nav-logo-icon { width: 30px !important; height: 30px !important; border-radius: 8px !important; }
+    .nav-logo-icon svg { width: 16px !important; height: 16px !important; }
+    .btn-logout { font-size: 0.78rem !important; padding: 0.28rem 0.7rem !important; border-radius: 6px !important; }
+
+    /* Dev toolbar emojis — fix rendering */
+    #devToolbar button { font-family: "Apple Color Emoji", "Segoe UI Emoji", sans-serif !important; }
+
+    /* Form labels */
+    .form-label { font-size: 0.7rem !important; letter-spacing: 0.06em !important; }
+    .form-control { border-radius: 8px !important; font-size: 0.875rem !important; border-color: rgba(255,255,255,0.08) !important; }
+
+    /* Status grid — tighter gap */
+    .status-grid { gap: 0.65rem !important; }
+
   </style>
 </head>
 <body>
@@ -667,13 +949,7 @@
   
   async function initDashboard(data) {
     userData = data;
-
-    
     document.getElementById('navName').textContent = data.name;
-    const mb = document.getElementById('modeBadge');
-    const modeMap = { photo: '📸 Photo', geo: '📍 Location', both: '📸📍 Both' };
-    mb.textContent = modeMap[data.trackingMode] || data.trackingMode;
-    mb.className = `mode-badge ${data.trackingMode}`;
 
     
     await loadSettings();
@@ -847,20 +1123,24 @@
 
   
   function startClock() {
-    if (clockTimer) clearInterval(clockTimer); 
+    if (clockTimer) clearInterval(clockTimer);
     function tick() {
       const now = new Date();
       document.getElementById('liveClock').textContent = now.toLocaleTimeString('en-SG');
       document.getElementById('liveDate').textContent = now.toLocaleDateString('en-SG', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
-      
-      if (todayShift?.clockInTime && !todayShift?.clockOutTime) {
-        const breakDeduction = onBreak
-          ? totalBreakMs + (Date.now() - breakStart)  
-          : totalBreakMs;
-        const elapsed = Math.max(0, Date.now() - new Date(todayShift.clockInTime).getTime() - breakDeduction);
-        document.getElementById('statHours').textContent = msToHM(elapsed);
-        updateProgress(elapsed);
+      // Always check todayShift fresh — it may have been set after clock started
+      const shift = todayShift;
+      if (shift && shift.clockInTime && !shift.clockOutTime) {
+        const clockInMs = new Date(shift.clockInTime).getTime();
+        if (!isNaN(clockInMs)) {
+          const breakDeduction = onBreak
+            ? totalBreakMs + (Date.now() - breakStart)
+            : totalBreakMs;
+          const elapsed = Math.max(0, Date.now() - clockInMs - breakDeduction);
+          document.getElementById('statHours').textContent = msToHM(elapsed);
+          updateProgress(elapsed);
+        }
       }
     }
     tick();
@@ -869,7 +1149,15 @@
 
   
   async function initModeUI() {
-    const mode = userData.trackingMode;
+    // Use tracking mode from company settings, fall back to user profile
+    const mode = workSettings.trackingMode || userData.trackingMode || 'photo';
+    // Update userData so rest of app uses the correct mode
+    userData.trackingMode = mode;
+
+    const mb = document.getElementById('modeBadge');
+    const modeMap = { photo: '📸 Photo', geo: '📍 Location', both: '📸📍 Both' };
+    mb.textContent = modeMap[mode] || mode;
+    mb.className = `mode-badge ${mode}`;
 
     if (mode === 'photo' || mode === 'both') {
       document.getElementById('photoUI').style.display = 'block';
@@ -1764,6 +2052,8 @@ You MUST respond with ONLY a raw JSON object. No markdown. No code fences. No ex
     if (!ms || ms < 0) return '0h 0m';
     const h = Math.floor(ms / 3600000);
     const m = Math.floor((ms % 3600000) / 60000);
+    const s = Math.floor((ms % 60000) / 1000);
+    if (h === 0) return `${m}m ${s}s`;
     return `${h}h ${m}m`;
   }
   function msToMin(ms) {

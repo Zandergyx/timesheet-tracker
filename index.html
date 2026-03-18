@@ -88,6 +88,248 @@
       .admin-notice { font-size: 0.75rem; padding: 0.5rem 0.75rem; }
       body { align-items: flex-start; padding-top: 1rem; }
     }
+
+    /* ═══════════════════════════════════════════
+       UI POLISH — animations, hover states, depth
+    ═══════════════════════════════════════════ */
+
+    /* Smooth transitions on all interactive elements */
+    *, *::before, *::after { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+    /* Page load stagger animation */
+    @keyframes staggerIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(110,231,183,0); }
+      50%       { box-shadow: 0 0 16px 2px rgba(110,231,183,0.12); }
+    }
+    @keyframes borderGlow {
+      0%, 100% { border-color: var(--border); }
+      50%       { border-color: rgba(110,231,183,0.35); }
+    }
+
+    /* Cards — glass depth effect */
+    .card {
+      background: linear-gradient(145deg, rgba(30,30,46,0.6) 0%, rgba(22,22,31,1) 100%) !important;
+      backdrop-filter: blur(2px);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(110,231,183,0.07) !important;
+      border-color: rgba(110,231,183,0.15) !important;
+    }
+
+    /* Stat cards — extra hover lift */
+    .stat-card {
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(110,231,183,0.04), transparent);
+      transition: left 0.5s ease;
+    }
+    .stat-card:hover::before { left: 100%; }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(110,231,183,0.2) !important;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4) !important;
+    }
+
+    /* Nav items — smooth indicator slide */
+    .nav-item {
+      position: relative;
+      transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease !important;
+    }
+    .nav-item::after {
+      content: '';
+      position: absolute; left: 0; top: 50%;
+      transform: translateY(-50%) scaleY(0);
+      width: 2px; height: 60%;
+      background: var(--accent);
+      border-radius: 0 2px 2px 0;
+      transition: transform 0.2s ease;
+    }
+    .nav-item:hover::after { transform: translateY(-50%) scaleY(0.6); }
+    .nav-item.active::after { transform: translateY(-50%) scaleY(1); }
+
+    /* Buttons — smooth press effect */
+    .btn-primary-action, .btn-secondary-action, .btn-danger-action,
+    .btn-approve, .btn-reject, .btn-main {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .btn-primary-action:active, .btn-main:active { transform: scale(0.97) translateY(0) !important; }
+    .btn-secondary-action:active, .btn-danger-action:active { transform: scale(0.97) !important; }
+
+    /* Form inputs — glow on focus */
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 0 3px rgba(110,231,183,0.12), 0 2px 8px rgba(0,0,0,0.2) !important;
+      transform: none;
+    }
+
+    /* Table rows — smooth hover */
+    .data-table tr { transition: background 0.15s ease; }
+    .data-table tr:hover td { background: rgba(110,231,183,0.03) !important; }
+
+    /* Badge status — subtle glow */
+    .badge-flagged { box-shadow: 0 0 8px rgba(248,113,113,0.2); }
+    .badge-suspicious { box-shadow: 0 0 8px rgba(251,191,36,0.15); }
+
+    /* Employee rows — hover lift */
+    .employee-row {
+      transition: background 0.15s ease, transform 0.15s ease;
+      border-radius: 8px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      margin: 0 -0.5rem;
+    }
+    .employee-row:hover { background: rgba(110,231,183,0.03); }
+
+    /* Alert cards — slide in */
+    .alert-card {
+      transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease !important;
+    }
+    .alert-card:hover { border-color: rgba(248,113,113,0.4) !important; }
+
+    /* Sidebar — subtle gradient background */
+    .sidebar {
+      background: linear-gradient(180deg, rgba(17,17,24,0.95) 0%, rgba(14,14,20,0.98) 100%) !important;
+    }
+
+    /* Navbar — refined glass */
+    .navbar {
+      background: rgba(17,17,24,0.92) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      box-shadow: 0 1px 0 rgba(110,231,183,0.06) !important;
+    }
+
+    /* Page title — gradient text */
+    .page-title {
+      background: linear-gradient(135deg, var(--text) 60%, rgba(110,231,183,0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Card title — refined */
+    .card-title {
+      letter-spacing: 0.08em;
+      font-size: 0.72rem !important;
+    }
+
+    /* Panel animations — stagger on switch */
+    .panel.active > * {
+      animation: staggerIn 0.35s ease both;
+    }
+    .panel.active > *:nth-child(2) { animation-delay: 0.05s; }
+    .panel.active > *:nth-child(3) { animation-delay: 0.1s; }
+    .panel.active > *:nth-child(4) { animation-delay: 0.15s; }
+
+    /* Loading overlay — smoother spinner */
+    .spinner {
+      border-radius: 50%;
+      animation: spin 0.75s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+    }
+
+    /* Leaderboard rows */
+    .lb-row {
+      transition: background 0.15s ease;
+      border-radius: 8px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      margin: 0 -0.5rem;
+    }
+    .lb-row:hover { background: rgba(110,231,183,0.03); }
+
+    /* Bell alert dot — breathing animation */
+    .bell-dot.show { animation: glowPulse 2s ease infinite !important; }
+
+    /* Tutorial float card — more refined */
+    .tutorial-float {
+      backdrop-filter: blur(12px) !important;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(110,231,183,0.2) !important;
+    }
+
+    /* Mode chips — subtle glow */
+    .mode-chip.photo { box-shadow: 0 0 8px rgba(110,231,183,0.1); }
+    .mode-chip.geo { box-shadow: 0 0 8px rgba(59,130,246,0.1); }
+    .mode-chip.both { box-shadow: 0 0 8px rgba(251,191,36,0.1); }
+
+    /* Scrollbar — even thinner */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(110,231,183,0.15); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(110,231,183,0.3); }
+
+    /* Login card — animated border on focus-within */
+    .card:focus-within {
+      border-color: rgba(110,231,183,0.2) !important;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(110,231,183,0.1) !important;
+    }
+    /* Tab buttons refined hover */
+    .tab-btn:hover:not(.active) { color: var(--text) !important; background: rgba(255,255,255,0.04) !important; }
+    .role-btn:hover:not(.active) { color: var(--text) !important; background: rgba(255,255,255,0.04) !important; }
+    /* Strength fill animation */
+    .strength-fill { transition: width 0.4s cubic-bezier(0.4,0,0.2,1), background 0.4s ease !important; }
+    /* Logo icon pulse */
+    .logo-icon { animation: glowPulse 4s ease infinite; }
+    /* Footer fade */
+    .footer-note { opacity: 0.6; transition: opacity 0.3s ease; }
+    .footer-note:hover { opacity: 1; }
+    /* Orbs — smoother */
+    .orb { transition: transform 0.1s ease; }
+  
+    /* Richer background */
+    body::before {
+      background-image:
+        linear-gradient(rgba(110,231,183,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(110,231,183,0.04) 1px, transparent 1px) !important;
+      background-size: 48px 48px !important;
+    }
+    /* Orbs — more vivid */
+    .orb-1 { background: radial-gradient(circle, rgba(110,231,183,0.14) 0%, transparent 70%) !important; }
+    .orb-2 { background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%) !important; }
+
+    /* Logo — tighter */
+    .logo { margin-bottom: 1.5rem !important; }
+    .logo h1 { font-size: 2rem !important; letter-spacing: -0.05em !important; }
+    .logo p { font-size: 0.8rem !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; color: rgba(110,231,183,0.5) !important; }
+    .logo-icon { border-radius: 18px !important; box-shadow: 0 0 0 1px rgba(110,231,183,0.2), 0 8px 32px rgba(110,231,183,0.15) !important; }
+
+    /* Card — less rounded, sharper */
+    .card { border-radius: 16px !important; padding: 1.75rem !important; border-color: rgba(255,255,255,0.07) !important; background: rgba(16,16,24,0.95) !important; }
+
+    /* Role/tab rows — more refined */
+    .role-row, .tab-row { border-radius: 8px !important; background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.06) !important; }
+    .role-btn.active, .tab-btn.active { border-radius: 6px !important; background: rgba(110,231,183,0.12) !important; box-shadow: none !important; }
+
+    /* Inputs — less rounded, cleaner */
+    .form-control, .form-select { border-radius: 8px !important; background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.08) !important; font-size: 0.875rem !important; }
+    .form-control:focus, .form-select:focus { background: rgba(255,255,255,0.06) !important; }
+
+    /* Button — refined */
+    .btn-main { border-radius: 8px !important; font-size: 0.875rem !important; padding: 0.7rem !important; letter-spacing: 0.03em !important; }
+
+    /* Form labels — thinner */
+    .form-label { font-size: 0.7rem !important; color: rgba(100,116,139,0.8) !important; }
+
+    /* Admin notice */
+    .admin-notice { border-radius: 8px !important; font-size: 0.78rem !important; }
+
+    /* Field hints */
+    .field-hint { font-size: 0.72rem !important; }
+
+    /* Wrapper max width tighter */
+    .wrapper { max-width: 420px !important; }
+
   </style>
 </head>
 <body>
@@ -137,33 +379,25 @@
 
       <div class="form-panel" id="registerPanel">
         <div class="mb-3">
-          <label class="form-label">Full Name</label>
-          <input type="text" class="form-control" id="regName" placeholder="John Smith"/>
+          <label class="form-label">Company</label>
+          <select class="form-select" id="regCompany" onchange="loadCompanyNames()">
+            <option value="">— Select your company —</option>
+          </select>
+          <div class="field-hint">Your company must be registered by an admin first.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Your Name</label>
+          <select class="form-select" id="regName">
+            <option value="">— Select your company first —</option>
+          </select>
         </div>
         <div class="mb-3">
           <label class="form-label">Email Address</label>
           <input type="email" class="form-control" id="regEmail" placeholder="you@example.com"/>
         </div>
         <div class="mb-3">
-          <label class="form-label">Company</label>
-          <select class="form-select" id="regCompany">
-            <option value="">— Loading companies... —</option>
-          </select>
-          <div class="field-hint">Your company must be registered by an admin first.</div>
-        </div>
-        <div class="mb-3">
           <label class="form-label">Department</label>
           <input type="text" class="form-control" id="regDept" placeholder="e.g. Operations, Sales..."/>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Tracking Mode</label>
-          <select class="form-select" id="regMode" onchange="showModeInfo()">
-            <option value="">— Choose how you clock in —</option>
-            <option value="photo">📸 Photo Mode</option>
-            <option value="geo">📍 Location Mode</option>
-            <option value="both">📸📍 Both (Photo + Location)</option>
-          </select>
-          <div class="mode-info" id="modeInfo"></div>
         </div>
         <div class="mb-3">
           <label class="form-label">Password</label>
@@ -308,16 +542,31 @@
     clearAlert();
   }
 
-  function showModeInfo() {
-    const mode = document.getElementById('regMode').value;
-    const box = document.getElementById('modeInfo');
-    const info = {
-      photo: `<strong>📸 Photo Mode</strong> — You will take a selfie when starting and ending your shift. The app uses AI to check the photo is real and matches your face.`,
-      geo: `<strong>📍 Location Mode</strong> — Your phone's GPS is checked when you clock in and out. You must be within range of the workplace for it to work.`,
-      both: `<strong>📸📍 Both Mode</strong> — You need to take a selfie AND be at the workplace location. This is the most secure option.`
-    };
-    if (info[mode]) { box.innerHTML = info[mode]; box.classList.add('show'); }
-    else box.classList.remove('show');
+  // When employee picks a company, load their name list and show tracking mode
+  async function loadCompanyNames() {
+    const companyId = document.getElementById('regCompany').value;
+    const nameSelect = document.getElementById('regName');
+    if (!companyId) {
+      nameSelect.innerHTML = '<option value="">— Select your company first —</option>';
+      return;
+    }
+    try {
+      // Load name list
+      const compSnap = await window._getDoc(window._doc(window._db, 'companies', companyId));
+      const names = compSnap.exists() ? (compSnap.data().employeeNames || []) : [];
+      if (!names.length) {
+        nameSelect.innerHTML = '<option value="">— No names added yet, contact your admin —</option>';
+      } else {
+        nameSelect.innerHTML = '<option value="">— Select your name —</option>' +
+          names.map(n => `<option value="${n}">${n}</option>`).join('');
+      }
+
+      // Show tracking mode info
+      const settingsSnap = await window._getDoc(window._doc(window._db, 'settings', companyId));
+      const mode = settingsSnap.exists() ? settingsSnap.data().trackingMode : null;
+      const modeLabels = { photo: '📸 Photo Mode', geo: '📍 Location Mode', both: '📸📍 Both' };
+      if (mode) showAlert(`This company uses ${modeLabels[mode] || mode} for clocking in and out.`, 'success');
+    } catch(e) { console.error(e); }
   }
 
   function checkStrength() { _doStrength('regPassword','strengthFill','strengthText'); }
@@ -368,14 +617,13 @@
 
   async function handleRegister() {
     clearAlert();
-    const name = document.getElementById('regName').value.trim();
+    const name = document.getElementById('regName').value;
     const email = document.getElementById('regEmail').value.trim();
     const company = document.getElementById('regCompany').value;
     const dept = document.getElementById('regDept').value.trim();
-    const mode = document.getElementById('regMode').value;
     const pw = document.getElementById('regPassword').value;
     const confirm = document.getElementById('regConfirm').value;
-    if (!name||!email||!company||!dept||!mode||!pw||!confirm) return showAlert('Please fill in all fields.');
+    if (!name||!email||!company||!dept||!pw||!confirm) return showAlert('Please fill in all fields.');
     if (pw !== confirm) return showAlert('Passwords do not match.');
     if (pw.length < 6) return showAlert('Password must be at least 6 characters.');
     setLoading('registerBtn', true);
@@ -383,10 +631,15 @@
       const compSnap = await window._getDoc(window._doc(window._db,'companies',company));
       const companyName = compSnap.exists() ? compSnap.data().name : '';
       const adminEmail = compSnap.exists() ? compSnap.data().adminEmail : '';
+
+      // Get tracking mode from company settings
+      const settingsSnap = await window._getDoc(window._doc(window._db,'settings',company));
+      const trackingMode = settingsSnap.exists() ? (settingsSnap.data().trackingMode || 'photo') : 'photo';
+
       const cred = await window._createUser(window._auth, email, pw);
       await window._setDoc(window._doc(window._db,'users',cred.user.uid), {
         name, email, companyId:company, companyName, adminEmail,
-        department:dept, trackingMode:mode, role:'employee',
+        department:dept, trackingMode, role:'employee',
         setupComplete:true, createdAt:new Date().toISOString()
       });
       showAlert('Account created! Redirecting...', 'success');
@@ -458,7 +711,8 @@
   });
 
   window.switchRole = switchRole; window.switchTab = switchTab;
-  window.switchAdminTab = switchAdminTab; window.showModeInfo = showModeInfo;
+  window.switchAdminTab = switchAdminTab;
+  window.loadCompanyNames = loadCompanyNames;
   window.checkStrength = checkStrength; window.checkAdminStrength = checkAdminStrength;
   window.handleLogin = handleLogin; window.handleRegister = handleRegister;
   window.handleAdminLogin = handleAdminLogin; window.handleAdminRegister = handleAdminRegister;

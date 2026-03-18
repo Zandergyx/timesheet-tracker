@@ -148,7 +148,8 @@
       color: var(--accent); border-left-color: var(--accent);
       background: rgba(110,231,183,0.05);
     }
-    .nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+    .nav-item .icon { width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center; }
+    .nav-item .icon svg { width:16px;height:16px;stroke:currentColor; }
     .nav-badge {
       margin-left: auto; background: var(--danger);
       color: white; font-size: 0.65rem; font-weight: 700;
@@ -197,7 +198,8 @@
     .stat-card:nth-child(2) { animation-delay: 0.05s; }
     .stat-card:nth-child(3) { animation-delay: 0.1s; }
     .stat-card:nth-child(4) { animation-delay: 0.15s; }
-    .stat-icon { font-size: 1.4rem; margin-bottom: 0.6rem; }
+    .stat-icon { width:36px;height:36px;margin-bottom:0.6rem;display:flex;align-items:center;justify-content:center; }
+    .stat-icon svg { width:28px;height:28px; }
     .stat-val {
       font-family: 'Syne', sans-serif; font-size: 1.8rem;
       font-weight: 800; letter-spacing: -0.04em; line-height: 1;
@@ -433,6 +435,36 @@
     .lb-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.8s ease; }
     .lb-pct { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; color: var(--accent); flex-shrink: 0; }
 
+    /* ── Breakdown rows (reference style) ── */
+    .breakdown-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid rgba(30,30,46,0.5);
+      animation: staggerIn 0.35s ease both;
+      transition: background 0.15s ease;
+      border-radius: 6px;
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+      margin: 0 -0.25rem;
+    }
+    .breakdown-row:last-child { border-bottom: none; }
+    .breakdown-row:hover { background: rgba(110,231,183,0.03); }
+    .name-chip {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.35rem 0.75rem;
+      font-size: 0.83rem; color: var(--text);
+    }
+    .name-chip-remove {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 0.9rem; line-height: 1;
+      padding: 0; transition: color 0.2s;
+    }
+    .name-chip-remove:hover { color: var(--danger); }
+
     @media (max-width: 768px) {
       .sidebar { display: none; }
       .stat-grid { grid-template-columns: repeat(2,1fr); }
@@ -465,9 +497,353 @@
       .lb-row { gap: 0.5rem; }
       .lb-pct { font-size: 0.85rem; }
     }
+    /* ── Tutorial floating card ── */
+    .tutorial-float {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 300;
+      width: 300px;
+      background: var(--card); border: 1px solid var(--accent);
+      border-radius: 16px; padding: 1.25rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(110,231,183,0.1);
+      animation: slideInFloat 0.4s ease both;
+    }
+    .tutorial-float.hide { display: none; }
+    @keyframes slideInFloat { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .tutorial-float-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem; }
+    .tutorial-float-step { font-size:0.7rem;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:0.06em;color:var(--accent);text-transform:uppercase; }
+    .tutorial-float-close { background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:0; }
+    .tutorial-float-close:hover { color:var(--danger); }
+    .tutorial-float-icon { font-size:1.6rem;margin-bottom:0.5rem; }
+    .tutorial-float-title { font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;color:var(--text);margin-bottom:0.5rem;letter-spacing:-0.01em; }
+    .tutorial-float-desc { font-size:0.8rem;color:var(--muted);line-height:1.6;margin-bottom:1rem; }
+    .tutorial-float-desc strong { color:var(--text); }
+    .tutorial-float-action { background:rgba(110,231,183,0.07);border:1px solid rgba(110,231,183,0.15);border-radius:8px;padding:0.6rem 0.75rem;font-size:0.78rem;color:var(--text);line-height:1.6;margin-bottom:1rem; }
+    .tutorial-float-action .tag { display:inline-block;background:rgba(110,231,183,0.15);color:var(--accent);border-radius:5px;padding:0.05rem 0.4rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem; }
+    .tutorial-float-dots { display:flex;gap:0.3rem;margin-bottom:1rem; }
+    .tutorial-float-dot { flex:1;height:3px;border-radius:2px;background:var(--border);transition:background 0.3s; }
+    .tutorial-float-dot.active { background:var(--accent); }
+    .tutorial-float-dot.done { background:rgba(110,231,183,0.4); }
+    .tutorial-float-btns { display:flex;gap:0.5rem;align-items:center; }
+    .tutorial-float-next { flex:1;background:linear-gradient(135deg,var(--accent),#34d399);border:none;border-radius:8px;color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;padding:0.55rem 1rem;cursor:pointer;transition:all 0.2s; }
+    .tutorial-float-next:hover { transform:translateY(-1px);box-shadow:0 4px 14px rgba(110,231,183,0.3); }
+    .tutorial-float-goto { background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.78rem;padding:0.5rem 0.75rem;border-radius:8px;cursor:pointer;transition:all 0.2s; }
+    .tutorial-float-goto:hover { border-color:var(--accent);color:var(--accent); }
+
+    /* ═══════════════════════════════════════════
+       UI POLISH — animations, hover states, depth
+    ═══════════════════════════════════════════ */
+
+    /* Smooth transitions on all interactive elements */
+    *, *::before, *::after { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+    /* Page load stagger animation */
+    @keyframes staggerIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(110,231,183,0); }
+      50%       { box-shadow: 0 0 16px 2px rgba(110,231,183,0.12); }
+    }
+    @keyframes borderGlow {
+      0%, 100% { border-color: var(--border); }
+      50%       { border-color: rgba(110,231,183,0.35); }
+    }
+
+    /* Cards — glass depth effect */
+    .card {
+      background: linear-gradient(145deg, rgba(30,30,46,0.6) 0%, rgba(22,22,31,1) 100%) !important;
+      backdrop-filter: blur(2px);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(110,231,183,0.07) !important;
+      border-color: rgba(110,231,183,0.15) !important;
+    }
+
+    /* Stat cards — extra hover lift */
+    .stat-card {
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(110,231,183,0.04), transparent);
+      transition: left 0.5s ease;
+    }
+    .stat-card:hover::before { left: 100%; }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(110,231,183,0.2) !important;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4) !important;
+    }
+
+    /* Nav items — smooth indicator slide */
+    .nav-item {
+      position: relative;
+      transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease !important;
+    }
+    .nav-item::after {
+      content: '';
+      position: absolute; left: 0; top: 50%;
+      transform: translateY(-50%) scaleY(0);
+      width: 2px; height: 60%;
+      background: var(--accent);
+      border-radius: 0 2px 2px 0;
+      transition: transform 0.2s ease;
+    }
+    .nav-item:hover::after { transform: translateY(-50%) scaleY(0.6); }
+    .nav-item.active::after { transform: translateY(-50%) scaleY(1); }
+
+    /* Buttons — smooth press effect */
+    .btn-primary-action, .btn-secondary-action, .btn-danger-action,
+    .btn-approve, .btn-reject, .btn-main {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .btn-primary-action:active, .btn-main:active { transform: scale(0.97) translateY(0) !important; }
+    .btn-secondary-action:active, .btn-danger-action:active { transform: scale(0.97) !important; }
+
+    /* Form inputs — glow on focus */
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 0 3px rgba(110,231,183,0.12), 0 2px 8px rgba(0,0,0,0.2) !important;
+      transform: none;
+    }
+
+    /* Table rows — smooth hover */
+    .data-table tr { transition: background 0.15s ease; }
+    .data-table tr:hover td { background: rgba(110,231,183,0.03) !important; }
+
+    /* Badge status — subtle glow */
+    .badge-flagged { box-shadow: 0 0 8px rgba(248,113,113,0.2); }
+    .badge-suspicious { box-shadow: 0 0 8px rgba(251,191,36,0.15); }
+
+    /* Employee rows — hover lift */
+    .employee-row {
+      transition: background 0.15s ease, transform 0.15s ease;
+      border-radius: 8px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      margin: 0 -0.5rem;
+    }
+    .employee-row:hover { background: rgba(110,231,183,0.03); }
+
+    /* Alert cards — slide in */
+    .alert-card {
+      transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease !important;
+    }
+    .alert-card:hover { border-color: rgba(248,113,113,0.4) !important; }
+
+    /* Sidebar — subtle gradient background */
+    .sidebar {
+      background: linear-gradient(180deg, rgba(17,17,24,0.95) 0%, rgba(14,14,20,0.98) 100%) !important;
+    }
+
+    /* Navbar — refined glass */
+    .navbar {
+      background: rgba(17,17,24,0.92) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      box-shadow: 0 1px 0 rgba(110,231,183,0.06) !important;
+    }
+
+    /* Page title — gradient text */
+    .page-title {
+      background: linear-gradient(135deg, var(--text) 60%, rgba(110,231,183,0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Card title — refined */
+    .card-title {
+      letter-spacing: 0.08em;
+      font-size: 0.72rem !important;
+    }
+
+    /* Panel animations — stagger on switch */
+    .panel.active > * {
+      animation: staggerIn 0.35s ease both;
+    }
+    .panel.active > *:nth-child(2) { animation-delay: 0.05s; }
+    .panel.active > *:nth-child(3) { animation-delay: 0.1s; }
+    .panel.active > *:nth-child(4) { animation-delay: 0.15s; }
+
+    /* Loading overlay — smoother spinner */
+    .spinner {
+      border-radius: 50%;
+      animation: spin 0.75s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+    }
+
+    /* Leaderboard rows */
+    .lb-row {
+      transition: background 0.15s ease;
+      border-radius: 8px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      margin: 0 -0.5rem;
+    }
+    .lb-row:hover { background: rgba(110,231,183,0.03); }
+
+    /* Bell alert dot — breathing animation */
+    .bell-dot.show { animation: glowPulse 2s ease infinite !important; }
+
+    /* Tutorial float card — more refined */
+    .tutorial-float {
+      backdrop-filter: blur(12px) !important;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(110,231,183,0.2) !important;
+    }
+
+    /* Mode chips — subtle glow */
+    .mode-chip.photo { box-shadow: 0 0 8px rgba(110,231,183,0.1); }
+    .mode-chip.geo { box-shadow: 0 0 8px rgba(59,130,246,0.1); }
+    .mode-chip.both { box-shadow: 0 0 8px rgba(251,191,36,0.1); }
+
+    /* Scrollbar — even thinner */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(110,231,183,0.15); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(110,231,183,0.3); }
+
+    /* Admin badge — subtle shimmer */
+    .admin-badge {
+      background: linear-gradient(90deg, rgba(251,191,36,0.15), rgba(251,191,36,0.25), rgba(251,191,36,0.15)) !important;
+      background-size: 200% auto;
+      animation: shimmer 3s linear infinite;
+    }
+    /* Stat values — number count animation feel */
+    .stat-val { transition: color 0.3s ease; }
+    /* Alert bell hover */
+    .alert-bell { transition: all 0.2s ease !important; }
+    .alert-bell:hover { background: rgba(110,231,183,0.08) !important; border-color: rgba(110,231,183,0.2) !important; }
+    /* Name chips — hover highlight */
+    .name-chip { transition: all 0.2s ease !important; }
+    .name-chip:hover { border-color: rgba(110,231,183,0.25) !important; background: rgba(110,231,183,0.05) !important; }
+    /* Correction buttons */
+    .btn-approve:active, .btn-reject:active { transform: scale(0.95); }
+    /* Map container rounded */
+    #mapPicker { box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important; }
+    /* AI summary box — typing feel */
+    .ai-summary-box { border-color: rgba(110,231,183,0.12) !important; }
+    /* Chart containers — no overflow */
+    canvas { border-radius: 4px; }
+    /* Leaderboard fill animation */
+    .lb-bar-fill { transition: width 1.2s cubic-bezier(0.4,0,0.2,1) !important; }
+    /* Correction status badges */
+    .badge-pending { animation: borderGlow 3s ease infinite; }
+    /* Export button */
+    .btn-primary-action:hover {
+      box-shadow: 0 8px 24px rgba(110,231,183,0.25) !important;
+    }
+    /* Mobile nav buttons */
+    #mobileNav button { transition: color 0.2s ease, transform 0.15s ease; }
+    #mobileNav button:active { transform: scale(0.92); }
+    /* Sidebar section labels */
+    .sidebar-section {
+      position: relative;
+    }
+    .sidebar-section::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 1rem; right: 1rem;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(110,231,183,0.08), transparent);
+    }
+  
+    /* Page title — larger, more dramatic */
+    .page-title { font-size: 1.6rem !important; letter-spacing: -0.04em !important; }
+    .page-sub { font-size: 0.8rem !important; margin-top: 0.15rem !important; opacity: 0.6 !important; }
+
+    /* Stat cards — compact, no dead space */
+    .stat-card { padding: 1rem !important; border-radius: 12px !important; border-color: rgba(255,255,255,0.06) !important; }
+    .stat-val { font-size: 1.6rem !important; letter-spacing: -0.04em !important; line-height: 1.1 !important; }
+    .stat-lbl { font-size: 0.68rem !important; letter-spacing: 0.06em !important; margin-top: 0.15rem !important; }
+    .stat-icon { margin-bottom: 0.4rem !important; }
+    .stat-icon svg { width: 22px !important; height: 22px !important; }
+
+    /* Sidebar — tighter */
+    .sidebar { width: 200px !important; padding: 1rem 0 !important; }
+    .sidebar-section { font-size: 0.62rem !important; padding: 0.75rem 1rem 0.3rem !important; letter-spacing: 0.1em !important; }
+    .nav-item { font-size: 0.82rem !important; padding: 0.45rem 1rem !important; gap: 0.5rem !important; }
+    .nav-item .icon svg { width: 14px !important; height: 14px !important; }
+    .nav-badge { font-size: 0.6rem !important; padding: 0.08rem 0.35rem !important; }
+
+    /* Navbar — refined */
+    .nav-title { font-size: 0.95rem !important; letter-spacing: -0.02em !important; }
+    .admin-badge { font-size: 0.62rem !important; padding: 0.15rem 0.45rem !important; }
+    .nav-logo-icon { width: 28px !important; height: 28px !important; border-radius: 7px !important; }
+
+    /* Cards — less padding, consistent */
+    .card { border-radius: 12px !important; padding: 1.1rem !important; border-color: rgba(255,255,255,0.06) !important; }
+    .card-title { font-size: 0.68rem !important; letter-spacing: 0.1em !important; margin-bottom: 1rem !important; color: rgba(100,116,139,0.7) !important; }
+
+    /* Attendance list — tighter rows */
+    .employee-row { padding-top: 0.55rem !important; padding-bottom: 0.55rem !important; }
+    .emp-avatar { width: 30px !important; height: 30px !important; border-radius: 8px !important; font-size: 0.75rem !important; }
+    .emp-name { font-size: 0.82rem !important; }
+    .emp-dept { font-size: 0.7rem !important; }
+    .emp-status { font-size: 0.68rem !important; padding: 0.18rem 0.55rem !important; }
+
+    /* Table — tighter */
+    .data-table th { font-size: 0.65rem !important; padding: 0.5rem 0.65rem !important; letter-spacing: 0.06em !important; }
+    .data-table td { font-size: 0.8rem !important; padding: 0.55rem 0.65rem !important; }
+    .badge-status { font-size: 0.65rem !important; padding: 0.16rem 0.45rem !important; border-radius: 5px !important; }
+    .flag-chip { font-size: 0.62rem !important; padding: 0.12rem 0.4rem !important; }
+
+    /* Alert cards */
+    .alert-card { padding: 0.85rem 1rem !important; border-radius: 10px !important; }
+    .alert-msg { font-size: 0.82rem !important; }
+    .alert-time { font-size: 0.7rem !important; }
+
+    /* Buttons */
+    .btn-primary-action { font-size: 0.82rem !important; padding: 0.6rem 1.1rem !important; border-radius: 8px !important; }
+    .btn-secondary-action { font-size: 0.78rem !important; padding: 0.45rem 0.9rem !important; border-radius: 7px !important; }
+    .btn-approve, .btn-reject { font-size: 0.72rem !important; padding: 0.28rem 0.6rem !important; border-radius: 6px !important; }
+    .btn-mark-seen { font-size: 0.72rem !important; border-radius: 6px !important; }
+
+    /* Leaderboard */
+    .lb-name { font-size: 0.82rem !important; }
+    .lb-stats { font-size: 0.7rem !important; }
+    .lb-pct { font-size: 0.9rem !important; }
+    .lb-rank { font-size: 1rem !important; }
+
+    /* Form */
+    .form-label { font-size: 0.68rem !important; letter-spacing: 0.06em !important; }
+    .form-control, .form-select { font-size: 0.85rem !important; border-radius: 8px !important; padding: 0.55rem 0.8rem !important; border-color: rgba(255,255,255,0.08) !important; }
+
+    /* Empty states */
+    .empty-state { padding: 2rem 1rem !important; }
+    .empty-icon { font-size: 1.8rem !important; margin-bottom: 0.5rem !important; }
+
+    /* AI summary */
+    .ai-summary-box { font-size: 0.83rem !important; border-radius: 10px !important; }
+
+    /* Breakdown rows */
+    .breakdown-row { padding: 0.48rem 0 !important; font-size: 0.82rem !important; }
+
   </style>
 </head>
 <body>
+
+<!-- Tutorial Floating Card -->
+<div class="tutorial-float hide" id="tutorialFloat">
+  <div class="tutorial-float-header">
+    <span class="tutorial-float-step" id="tutorialStepLabel">Step 1 of 5</span>
+    <button class="tutorial-float-close" onclick="closeTutorial()" title="Dismiss">✕</button>
+  </div>
+  <div class="tutorial-float-dots" id="tutorialDots"></div>
+  <div class="tutorial-float-icon" id="tutorialIcon"></div>
+  <div class="tutorial-float-title" id="tutorialTitle"></div>
+  <div class="tutorial-float-desc" id="tutorialDesc"></div>
+  <div class="tutorial-float-action" id="tutorialAction"></div>
+  <div class="tutorial-float-btns">
+    <button class="tutorial-float-goto" id="tutorialGotoBtn" onclick="tutorialGoTo()">Go there →</button>
+    <button class="tutorial-float-next" id="tutorialNextBtn" onclick="tutorialNext()">Done ✓</button>
+  </div>
+</div>
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner" style="width:32px;height:32px;border-color:rgba(110,231,183,0.2);border-top-color:var(--accent)"></div>
@@ -488,7 +864,7 @@
   <div style="display:flex;align-items:center;gap:0.75rem">
     <button class="btn-logout" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
     <div class="alert-bell" onclick="switchPanel('alerts')" title="Alerts">
-      🔔
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       <div class="bell-dot" id="bellDot"></div>
     </div>
     <button class="btn-logout" onclick="handleLogout()">Logout</button>
@@ -500,10 +876,10 @@
   <aside class="sidebar">
     <div class="sidebar-section">Overview</div>
     <div class="nav-item active" onclick="switchPanel('dashboard')">
-      <span class="icon">📊</span> Dashboard
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span> Dashboard
     </div>
     <div class="nav-item" onclick="switchPanel('alerts')">
-      <span class="icon">🚨</span> Alerts
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> Alerts
       <span class="nav-badge" id="alertsBadge">0</span>
     </div>
 
@@ -512,28 +888,31 @@
       <span class="icon">🕐</span> All Tempvres
     </div>
     <div class="nav-item" onclick="switchPanel('corrections')">
-      <span class="icon">✏️</span> Corrections
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span> Corrections
       <span class="nav-badge" id="corrBadge">0</span>
     </div>
 
     <div class="sidebar-section">Management</div>
     <div class="nav-item" onclick="switchPanel('employees')">
-      <span class="icon">👥</span> Employees
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span> Employees
     </div>
     <div class="nav-item" onclick="switchPanel('analytics')">
-      <span class="icon">📈</span> Analytics
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Analytics
     </div>
     <div class="nav-item" onclick="switchPanel('leaderboard')">
-      <span class="icon">🏆</span> Leaderboard
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg></span> Leaderboard
     </div>
     <div class="nav-item" onclick="switchPanel('summary')">
-      <span class="icon">🤖</span> AI Summary
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span> AI Summary
     </div>
     <div class="nav-item" onclick="switchPanel('settings')">
-      <span class="icon">⚙️</span> Settings
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span> Settings
     </div>
     <div class="nav-item" onclick="switchPanel('export')">
-      <span class="icon">📥</span> Export CSV
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Export CSV
+    </div>
+    <div class="nav-item" onclick="showTutorial()">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> Setup Guide
     </div>
   </aside>
 
@@ -549,24 +928,27 @@
 
       <div class="stat-grid">
         <div class="stat-card">
-          <div class="stat-icon">👥</div>
+          <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
           <div class="stat-val" id="statTotal">—</div>
           <div class="stat-lbl">Total Employees</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">✅</div>
+          <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
           <div class="stat-val" id="statPresent" style="color:var(--accent)">—</div>
           <div class="stat-lbl">Present Today</div>
+          <canvas id="microPresent" height="30" style="margin-top:0.5rem;width:100%;opacity:0.7"></canvas>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">🚨</div>
+          <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
           <div class="stat-val" id="statFlagged" style="color:var(--danger)">—</div>
           <div class="stat-lbl">Flagged Today</div>
+          <canvas id="microFlagged" height="30" style="margin-top:0.5rem;width:100%;opacity:0.7"></canvas>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">⏰</div>
+          <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="stat-val" id="statLate" style="color:var(--warning)">—</div>
           <div class="stat-lbl">Late Today</div>
+          <canvas id="microLate" height="30" style="margin-top:0.5rem;width:100%;opacity:0.7"></canvas>
         </div>
       </div>
 
@@ -668,9 +1050,25 @@
     <div class="panel" id="panel-employees">
       <div class="page-header">
         <div class="page-title">Employees</div>
-        <div class="page-sub">All registered employee accounts</div>
+        <div class="page-sub">Manage employee names and view registered accounts</div>
       </div>
+
+      <!-- Add employee names -->
       <div class="card">
+        <div class="card-title">Add Employee Names</div>
+        <p style="font-size:0.84rem;color:var(--muted);margin-bottom:1.25rem">Add your employees' names here. They will see these names in a dropdown when registering their account.</p>
+        <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap">
+          <input type="text" class="form-control" id="newEmployeeName" placeholder="e.g. John Smith" style="max-width:280px" onkeydown="if(event.key==='Enter')addEmployeeName()"/>
+          <button class="btn-primary-action" onclick="addEmployeeName()">+ Add Name</button>
+        </div>
+        <div id="employeeNamesList" style="display:flex;flex-wrap:wrap;gap:0.5rem">
+          <div style="font-size:0.84rem;color:var(--muted)">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Registered accounts -->
+      <div class="card">
+        <div class="card-title">Registered Accounts</div>
         <div style="overflow-x:auto">
           <table class="data-table">
             <thead>
@@ -726,6 +1124,15 @@
 
       <div class="card">
         <div class="card-title">Work Hours</div>
+        <div class="mb-3">
+          <label class="form-label">Employee Tracking Mode</label>
+          <select class="form-select" id="setTrackingMode">
+            <option value="photo">📸 Photo Mode — Employees take a selfie to clock in/out</option>
+            <option value="geo">📍 Location Mode — Employees must be at the workplace location</option>
+            <option value="both">📸📍 Both — Employees need a selfie AND be at the location</option>
+          </select>
+          <div style="font-size:0.76rem;color:var(--muted);margin-top:0.35rem">This applies to all employees in your company. New employees will automatically use this mode.</div>
+        </div>
         <div class="row g-3 mb-3">
           <div class="col-6">
             <label class="form-label">Work Start Time</label>
@@ -813,26 +1220,108 @@
     
     <div class="panel" id="panel-analytics">
       <div class="page-header">
-        <div class="page-title">📈 Analytics</div>
-        <div class="page-sub">Attendance trends over the last 7 days</div>
+        <div class="page-title">Analytics</div>
+        <div class="page-sub">Attendance trends and performance metrics</div>
       </div>
+
+      <!-- Top row: hours bar + radial gauge -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-7">
+          <div class="card" style="height:100%">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div class="card-title" style="margin:0">Avg Hours Worked</div>
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif">Last 7 days</span>
+            </div>
+            <canvas id="chartHours" height="110"></canvas>
+          </div>
+        </div>
+        <div class="col-md-5">
+          <div class="card" style="height:100%">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div class="card-title" style="margin:0">Attendance Rate</div>
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif">Today</span>
+            </div>
+            <!-- Radial gauge replacing donut -->
+            <div style="position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:1rem">
+              <canvas id="chartRadial" width="180" height="110"></canvas>
+              <div style="position:absolute;bottom:0;text-align:center">
+                <div id="radialValue" style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--text);line-height:1">—</div>
+                <div style="font-size:0.72rem;color:var(--muted);margin-top:0.1rem">Present</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem" id="radialStats"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reference-style breakdown: Status + Tracking modes -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div class="card-title" style="margin:0">Status Breakdown</div>
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif">All time</span>
+            </div>
+            <!-- Header row -->
+            <div style="display:grid;grid-template-columns:1fr auto auto;gap:0.5rem;padding:0 0 0.5rem;border-bottom:1px solid var(--border);margin-bottom:0.5rem">
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif;letter-spacing:0.05em">STATUS</span>
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif;letter-spacing:0.05em;text-align:right;width:60px">SHIFTS</span>
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif;letter-spacing:0.05em;text-align:right;width:48px">%</span>
+            </div>
+            <div id="statusBreakdownList"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div class="card-title" style="margin:0">Tracking Modes</div>
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif">Employees</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr auto auto;gap:0.5rem;padding:0 0 0.5rem;border-bottom:1px solid var(--border);margin-bottom:0.5rem">
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif;letter-spacing:0.05em">MODE</span>
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif;letter-spacing:0.05em;text-align:right;width:60px">COUNT</span>
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif;letter-spacing:0.05em;text-align:right;width:48px">%</span>
+            </div>
+            <div id="trackingModeList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance line with toggle -->
+      <div class="card mb-3">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
+          <div class="card-title" style="margin:0">Attendance Rate</div>
+          <div style="display:flex;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:3px;gap:3px">
+            <button id="attToggleAvg" onclick="toggleAttendance('avg')" style="background:var(--card);color:var(--accent);border:none;border-radius:6px;padding:0.3rem 0.75rem;font-family:'Syne',sans-serif;font-weight:600;font-size:0.75rem;cursor:pointer;transition:all 0.2s">Average</button>
+            <button id="attToggleEmp" onclick="toggleAttendance('emp')" style="background:none;color:var(--muted);border:none;border-radius:6px;padding:0.3rem 0.75rem;font-family:'Syne',sans-serif;font-weight:600;font-size:0.75rem;cursor:pointer;transition:all 0.2s">Per Employee</button>
+          </div>
+        </div>
+        <canvas id="chartAttendance" height="75"></canvas>
+        <div id="empAttSelect" style="display:none;margin-top:0.75rem">
+          <select class="form-select" id="attEmployeeSelect" onchange="updateEmpAttChart()" style="max-width:260px">
+            <option value="">— Select employee —</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Bottom row: clock-in distribution + flags -->
       <div class="row g-3">
-        <div class="col-md-8">
+        <div class="col-md-6">
           <div class="card">
-            <div class="card-title">Hours Worked Per Day</div>
-            <canvas id="chartHours" height="120"></canvas>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div class="card-title" style="margin:0">Clock-in Distribution</div>
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif">By hour</span>
+            </div>
+            <canvas id="chartClockIn" height="130"></canvas>
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
           <div class="card">
-            <div class="card-title">Status Breakdown</div>
-            <canvas id="chartStatus" height="180"></canvas>
-          </div>
-        </div>
-        <div class="col-12">
-          <div class="card">
-            <div class="card-title">Attendance Rate (% present per day)</div>
-            <canvas id="chartAttendance" height="80"></canvas>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div class="card-title" style="margin:0">Flag Types</div>
+              <span style="font-size:0.72rem;color:var(--muted);font-family:'Syne',sans-serif">All time</span>
+            </div>
+            <canvas id="chartFlags" height="130"></canvas>
           </div>
         </div>
       </div>
@@ -858,11 +1347,12 @@
 
 <!-- Mobile bottom nav -->
 <div id="mobileNav" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(17,17,24,0.97);border-top:1px solid var(--border);backdrop-filter:blur(12px);padding:0.5rem 0.25rem;justify-content:space-around;align-items:center;">
-  <button onclick="switchPanel('dashboard')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><span style="font-size:1.2rem">📊</span>Dashboard</button>
-  <button onclick="switchPanel('alerts')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><span style="font-size:1.2rem">🚨</span>Alerts</button>
-  <button onclick="switchPanel('timesheets')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><span style="font-size:1.2rem">🕐</span>Timesheets</button>
-  <button onclick="switchPanel('employees')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><span style="font-size:1.2rem">👥</span>Employees</button>
-  <button onclick="switchPanel('settings')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><span style="font-size:1.2rem">⚙️</span>Settings</button>
+  <button onclick="switchPanel('dashboard')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</button>
+  <button onclick="switchPanel('alerts')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Alerts</button>
+  <button onclick="switchPanel('timesheets')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timesheets</button>
+  <button onclick="switchPanel('employees')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Employees</button>
+  <button onclick="switchPanel('settings')" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</button>
+  <button onclick="showTutorial()" style="background:none;border:none;color:var(--muted);font-size:0.6rem;display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.25rem 0.5rem;"><svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Guide</button>
 </div>
 <style>
   @media (max-width: 768px) { #mobileNav { display:flex !important; } .main { padding-bottom:5rem; } }
@@ -927,7 +1417,13 @@
     document.getElementById('dashDate').textContent =
       new Date().toLocaleDateString('en-SG', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
-    // Show company name or dev mode indicator in navbar
+    // Show tutorial for new admins (first time only, not dev accounts)
+    if (!window._isDev) {
+      const tutorialDone = localStorage.getItem(`tutorial_done_${window._adminUser.uid}`);
+      if (!tutorialDone) {
+        setTimeout(showTutorial, 600);
+      }
+    }
     const companyBadge = document.getElementById('companyBadge');
     if (window._isDev) {
       companyBadge.textContent = '— All Companies (Dev)';
@@ -963,7 +1459,7 @@
     
     if (name === 'timesheets') loadTempvres();
     if (name === 'corrections') loadCorrections();
-    if (name === 'employees') renderEmployees();
+    if (name === 'employees') { renderEmployees(); loadEmployeeNames(); }
     if (name === 'analytics') loadAnalytics();
     if (name === 'leaderboard') loadLeaderboard();
     if (name === 'settings') {
@@ -1119,6 +1615,7 @@
   }
 
   function loadSettingsUI() {
+    document.getElementById('setTrackingMode').value = workSettings.trackingMode || 'photo';
     document.getElementById('setWorkStart').value = workSettings.workStartTime || '09:00';
     document.getElementById('setWorkEnd').value = workSettings.workEndTime || '18:00';
     document.getElementById('setRadius').value = workSettings.allowedRadius || 200;
@@ -1131,6 +1628,7 @@
     const lat = parseFloat(document.getElementById('setLat').value);
     const lng = parseFloat(document.getElementById('setLng').value);
     const data = {
+      trackingMode: document.getElementById('setTrackingMode').value,
       workStartTime: document.getElementById('setWorkStart').value,
       workEndTime: document.getElementById('setWorkEnd').value,
       allowedRadius: parseInt(document.getElementById('setRadius').value),
@@ -1193,6 +1691,179 @@
         <td style="color:var(--muted);font-size:0.78rem">${e.createdAt ? new Date(e.createdAt).toLocaleDateString('en-SG') : '—'}</td>
       </tr>`).join('');
   }
+
+  // ── Employee Name Management ─────────────────────────────────
+  async function loadEmployeeNames() {
+    if (!window._companyId) return;
+    try {
+      const snap = await window._getDoc(
+        window._doc(window._db, 'companies', window._companyId)
+      );
+      const names = snap.exists() ? (snap.data().employeeNames || []) : [];
+      renderNameChips(names);
+    } catch(e) { console.error(e); }
+  }
+
+  function renderNameChips(names) {
+    const container = document.getElementById('employeeNamesList');
+    if (!names.length) {
+      container.innerHTML = '<div style="font-size:0.84rem;color:var(--muted)">No names added yet. Add your employees above.</div>';
+      return;
+    }
+    container.innerHTML = names.map(name => `
+      <div class="name-chip">
+        ${name}
+        <button class="name-chip-remove" onclick="removeEmployeeName('${name.replace(/'/g,"\\'")}')">✕</button>
+      </div>`).join('');
+  }
+
+  async function addEmployeeName() {
+    if (!window._companyId) return showToast('Dev accounts cannot add names to a company.', 'error');
+    const input = document.getElementById('newEmployeeName');
+    const name = input.value.trim();
+    if (!name) return showToast('Please enter a name.', 'error');
+
+    try {
+      const snap = await window._getDoc(window._doc(window._db,'companies',window._companyId));
+      const names = snap.exists() ? (snap.data().employeeNames || []) : [];
+      if (names.includes(name)) return showToast('This name already exists.', 'error');
+      names.push(name);
+      await window._updateDoc(window._doc(window._db,'companies',window._companyId), { employeeNames: names });
+      input.value = '';
+      renderNameChips(names);
+      showToast(`✅ "${name}" added!`, 'success');
+    } catch(e) { showToast('Failed to add name.', 'error'); console.error(e); }
+  }
+
+  async function removeEmployeeName(name) {
+    if (!window._companyId) return;
+    if (!confirm(`Remove "${name}" from the list?`)) return;
+    try {
+      const snap = await window._getDoc(window._doc(window._db,'companies',window._companyId));
+      const names = (snap.data().employeeNames || []).filter(n => n !== name);
+      await window._updateDoc(window._doc(window._db,'companies',window._companyId), { employeeNames: names });
+      renderNameChips(names);
+      showToast(`Removed "${name}"`, 'success');
+    } catch(e) { showToast('Failed to remove name.', 'error'); }
+  }
+
+  window.addEmployeeName = addEmployeeName;
+  window.removeEmployeeName = removeEmployeeName;
+
+  // ── Step-by-step floating tutorial ──────────────────────────
+  const TUTORIAL_STEPS = [
+    {
+      icon: '👋',
+      title: 'Welcome to Tempvre!',
+      desc: "Let's get you set up in 4 quick steps. This guide stays on your screen while you do each step — just click <strong>Done ✓</strong> when you've finished each one.",
+      action: 'Click <span class="tag">Next Step →</span> below to begin.',
+      panel: null
+    },
+    {
+      icon: '⚙️',
+      title: 'Step 1 — Work hours & tracking',
+      desc: 'Set when your workday starts and ends, and choose how employees will clock in.',
+      action: 'Set your <strong>Work Start Time</strong>, <strong>Work End Time</strong>, choose a <strong>Tracking Mode</strong>, then click <strong>Save All Settings</strong>.',
+      panel: 'settings'
+    },
+    {
+      icon: '📍',
+      title: 'Step 2 — Workplace location',
+      desc: 'Pin your workplace on the map so employees in Location or Both mode can only clock in when they\'re on site.',
+      action: 'Scroll down in <strong>Settings</strong> → click <strong>Use my current location</strong> or click the map → set the radius → click <strong>Save All Settings</strong>.',
+      panel: 'settings'
+    },
+    {
+      icon: '👥',
+      title: 'Step 3 — Add employee names',
+      desc: 'Add the names of your employees. They will pick their name from a dropdown when registering — no typos, no fake names.',
+      action: 'Type each employee\'s full name → click <strong>+ Add Name</strong>. Do this for every employee.',
+      panel: 'employees'
+    },
+    {
+      icon: '🔗',
+      title: 'Step 4 — Share the link',
+      desc: 'Share the registration link with your employees. They select your company and their name to create their account.',
+      action: `Send employees this link:<br><strong style="font-size:0.75rem;word-break:break-all">${window.location.origin + window.location.pathname.replace('admin.html','index.html')}</strong><br><br>They click <strong>Employee → Register</strong> and select your company.`,
+      panel: null
+    },
+    {
+      icon: '✅',
+      title: "You're all set!",
+      desc: "Tempvre is ready to use. You can reopen this guide anytime from the <strong>❓ Setup Guide</strong> link in the sidebar.",
+      action: null,
+      panel: null
+    }
+  ];
+
+  let tutorialStep = 0;
+
+  function showTutorial() {
+    tutorialStep = 0;
+    renderTutorialStep();
+    document.getElementById('tutorialFloat').classList.remove('hide');
+  }
+
+  function renderTutorialStep() {
+    const step = TUTORIAL_STEPS[tutorialStep];
+    const total = TUTORIAL_STEPS.length;
+    const isLast = tutorialStep === total - 1;
+    const isFirst = tutorialStep === 0;
+
+    document.getElementById('tutorialStepLabel').textContent = `Step ${tutorialStep + 1} of ${total}`;
+    document.getElementById('tutorialIcon').textContent = step.icon;
+    document.getElementById('tutorialTitle').textContent = step.title;
+    document.getElementById('tutorialDesc').innerHTML = step.desc;
+
+    const actionEl = document.getElementById('tutorialAction');
+    if (step.action) {
+      actionEl.innerHTML = step.action;
+      actionEl.style.display = 'block';
+    } else {
+      actionEl.style.display = 'none';
+    }
+
+    // Progress dots
+    document.getElementById('tutorialDots').innerHTML = TUTORIAL_STEPS.map((_, i) =>
+      `<div class="tutorial-float-dot ${i === tutorialStep ? 'active' : i < tutorialStep ? 'done' : ''}"></div>`
+    ).join('');
+
+    // Buttons
+    const nextBtn = document.getElementById('tutorialNextBtn');
+    const gotoBtn = document.getElementById('tutorialGotoBtn');
+    nextBtn.textContent = isLast ? "Finish ✓" : isFirst ? "Next Step →" : "Done ✓";
+    gotoBtn.style.display = step.panel ? 'block' : 'none';
+    if (step.panel) gotoBtn.textContent = `Go to ${step.panel.charAt(0).toUpperCase() + step.panel.slice(1)} →`;
+  }
+
+  function tutorialGoTo() {
+    const step = TUTORIAL_STEPS[tutorialStep];
+    if (step.panel) switchPanel(step.panel);
+  }
+
+  function tutorialNext() {
+    if (tutorialStep < TUTORIAL_STEPS.length - 1) {
+      tutorialStep++;
+      renderTutorialStep();
+      // Auto navigate to the relevant panel
+      const step = TUTORIAL_STEPS[tutorialStep];
+      if (step.panel) switchPanel(step.panel);
+    } else {
+      closeTutorial();
+    }
+  }
+
+  function closeTutorial() {
+    document.getElementById('tutorialFloat').classList.add('hide');
+    if (window._adminUser) {
+      localStorage.setItem(`tutorial_done_${window._adminUser.uid}`, '1');
+    }
+  }
+
+  window.tutorialNext = tutorialNext;
+  window.tutorialGoTo = tutorialGoTo;
+  window.closeTutorial = closeTutorial;
+  window.showTutorial = showTutorial;
 
   function modeLabel(m) {
     return { photo:'📸 Photo', geo:'📍 Location', both:'📸📍 Both' }[m] || m || '—';
@@ -1403,7 +2074,7 @@
 
       container.innerHTML = alerts.map(a => `
         <div class="alert-card ${a.seen ? 'seen' : ''}">
-          <div class="alert-icon">${a.type === 'early_clockout' ? '⏰' : '🚨'}</div>
+          <div class="alert-icon">${a.type === 'early_clockout' ? `<svg style="width:22px;height:22px" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` : `<svg style="width:22px;height:22px" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`}</div>
           <div style="flex:1">
             <div class="alert-msg">${a.message || 'Flagged clock-out event'}</div>
             <div class="alert-time">${a.date} • ${formatTime(new Date(a.clockOutTime))}${a.companyName ? ` • ${a.companyName}` : ''}</div>
@@ -1620,14 +2291,21 @@ Write professionally but simply. Do not use bullet points. Do not start with "He
   let chartHoursObj = null;
   let chartStatusObj = null;
   let chartAttObj = null;
+  let chartClockInObj = null;
+  let chartFlagsObj = null;
+  let allShiftsCache = [];
+  let attMode = 'avg';
+
+  const scaleDefaults = {
+    x: { ticks:{ color:'#64748b', font:{ family:'DM Sans', size:11 } }, grid:{ color:'rgba(255,255,255,0.04)' } },
+    y: { ticks:{ color:'#64748b', font:{ family:'DM Sans', size:11 } }, grid:{ color:'rgba(255,255,255,0.04)' } }
+  };
 
   async function loadAnalytics() {
     if (chartsInitialised) return;
     chartsInitialised = true;
 
-    
-    const days = [];
-    const labels = [];
+    const days = [], labels = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
@@ -1636,75 +2314,258 @@ Write professionally but simply. Do not use bullet points. Do not start with "He
     }
 
     try {
-      const snap = await window._getDocs(window._collection(window._db, 'timesheets'));
+      const q = window._companyId
+        ? window._query(window._collection(window._db,'timesheets'), window._where('companyId','==',window._companyId))
+        : window._query(window._collection(window._db,'timesheets'));
+      const snap = await window._getDocs(q);
       const shifts = snap.docs.map(d => d.data());
+      allShiftsCache = shifts;
 
-      
       const hoursPerDay = days.map(date => {
-        const dayShifts = shifts.filter(s => s.date === date && s.totalHours);
-        if (!dayShifts.length) return 0;
-        return +(dayShifts.reduce((a, s) => a + s.totalHours, 0) / dayShifts.length).toFixed(1);
+        const s = shifts.filter(s => s.date === date && s.totalHours);
+        return s.length ? +(s.reduce((a,s)=>a+s.totalHours,0)/s.length).toFixed(1) : 0;
       });
-
-      
       const total = allEmployees.length || 1;
-      const attRate = days.map(date => {
-        const present = new Set(shifts.filter(s => s.date === date).map(s => s.uid)).size;
-        return Math.round(present / total * 100);
-      });
+      const attRate = days.map(date => Math.round(new Set(shifts.filter(s=>s.date===date).map(s=>s.uid)).size/total*100));
+      const normal = shifts.filter(s=>s.status==='normal').length;
+      const suspicious = shifts.filter(s=>s.status==='suspicious').length;
+      const flagged = shifts.filter(s=>s.status==='flagged').length;
+      const incomplete = shifts.filter(s=>!s.status||s.status==='incomplete').length;
+      const totalShifts = normal+suspicious+flagged+incomplete || 1;
+      const clockBuckets = Array(24).fill(0);
+      shifts.forEach(s => { if(s.clockInTime){ const h=new Date(s.clockInTime).getHours(); clockBuckets[h]++; } });
+      const workHours = clockBuckets.slice(6,22);
+      const workHourLabels = Array.from({length:16},(_,i)=>`${i+6}:00`);
+      const flagCounts = {};
+      shifts.forEach(s => (s.flags||[]).forEach(f => { flagCounts[f]=(flagCounts[f]||0)+1; }));
+      const flagLabels = Object.keys(flagCounts);
+      const flagVals = Object.values(flagCounts);
 
-      
-      const normal = shifts.filter(s => s.status === 'normal').length;
-      const suspicious = shifts.filter(s => s.status === 'suspicious').length;
-      const flagged = shifts.filter(s => s.status === 'flagged').length;
-      const incomplete = shifts.filter(s => !s.status || s.status === 'incomplete').length;
-
-      const chartDefaults = {
-        responsive: true,
-        plugins: { legend: { labels: { color: getComputedStyle(document.body).getPropertyValue('--text').trim() || '#e2e8f0', font: { family: 'DM Sans' } } } },
-        scales: {
-          x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-          y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-        }
-      };
-
-      
       chartHoursObj = new Chart(document.getElementById('chartHours'), {
         type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: 'Avg Hours Worked', data: hoursPerDay,
-            backgroundColor: 'rgba(110,231,183,0.3)', borderColor: '#6ee7b7',
-            borderWidth: 2, borderRadius: 6 }]
-        },
-        options: { ...chartDefaults, plugins: { ...chartDefaults.plugins } }
+        data: { labels, datasets: [{ label:'Avg Hours', data:hoursPerDay,
+          backgroundColor: ctx => { const g=ctx.chart.ctx.createLinearGradient(0,0,0,200); g.addColorStop(0,'rgba(110,231,183,0.6)'); g.addColorStop(1,'rgba(110,231,183,0.05)'); return g; },
+          borderColor:'#6ee7b7', borderWidth:2, borderRadius:8, borderSkipped:false }]},
+        options:{ responsive:true, plugins:{legend:{display:false}}, scales:{
+          x:{...scaleDefaults.x, grid:{display:false}},
+          y:{...scaleDefaults.y, min:0, ticks:{...scaleDefaults.y.ticks, callback:v=>v+'h'}}
+        }}
       });
 
-      
-      chartStatusObj = new Chart(document.getElementById('chartStatus'), {
-        type: 'doughnut',
-        data: {
-          labels: ['Normal', 'Suspicious', 'Flagged', 'Incomplete'],
-          datasets: [{ data: [normal, suspicious, flagged, incomplete],
-            backgroundColor: ['rgba(110,231,183,0.7)','rgba(251,191,36,0.7)','rgba(248,113,113,0.7)','rgba(100,116,139,0.4)'],
-            borderColor: ['#6ee7b7','#fbbf24','#f87171','#64748b'], borderWidth: 2 }]
-        },
-        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'DM Sans' }, boxWidth: 12 } } } }
-      });
+      // ── Radial gauge (replaces donut) ──
+      const presentToday = new Set(shifts.filter(s=>s.date===days[days.length-1]).map(s=>s.uid)).size;
+      const attendancePct = total > 0 ? Math.round(presentToday/total*100) : 0;
+      drawRadialGauge(attendancePct, presentToday, total);
 
-      
+      // ── Status breakdown table (reference style) ──
+      const statusData = [
+        { label:'Normal', icon:'●', color:'#6ee7b7', val:normal },
+        { label:'Suspicious', icon:'●', color:'#fbbf24', val:suspicious },
+        { label:'Flagged', icon:'●', color:'#f87171', val:flagged },
+        { label:'Incomplete', icon:'●', color:'#64748b', val:incomplete },
+      ];
+      document.getElementById('statusBreakdownList').innerHTML = statusData.map((s,i) => `
+        <div class="breakdown-row" style="animation-delay:${i*0.07}s">
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <span style="color:${s.color};font-size:0.6rem">●</span>
+            <span style="font-size:0.84rem;color:var(--text)">${s.label}</span>
+          </div>
+          <span style="font-size:0.84rem;color:var(--text);font-weight:500;text-align:right;width:60px">${s.val}</span>
+          <span style="font-size:0.82rem;color:var(--muted);text-align:right;width:48px">${Math.round(s.val/totalShifts*100)}%</span>
+        </div>`).join('');
+
+      // ── Tracking mode breakdown table ──
+      const modeCount = { photo:0, geo:0, both:0 };
+      allEmployees.forEach(e => { if(modeCount[e.trackingMode]!==undefined) modeCount[e.trackingMode]++; });
+      const totalEmp = allEmployees.length || 1;
+      const modeData = [
+        { label:'Photo Mode', icon:'📸', color:'#6ee7b7', val:modeCount.photo },
+        { label:'Location Mode', icon:'📍', color:'#3b82f6', val:modeCount.geo },
+        { label:'Both', icon:'🔒', color:'#fbbf24', val:modeCount.both },
+      ];
+      document.getElementById('trackingModeList').innerHTML = modeData.map((m,i) => `
+        <div class="breakdown-row" style="animation-delay:${i*0.07}s">
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <span style="color:${m.color};font-size:0.6rem">●</span>
+            <span style="font-size:0.84rem;color:var(--text)">${m.label}</span>
+          </div>
+          <span style="font-size:0.84rem;color:var(--text);font-weight:500;text-align:right;width:60px">${m.val}</span>
+          <span style="font-size:0.82rem;color:var(--muted);text-align:right;width:48px">${Math.round(m.val/totalEmp*100)}%</span>
+        </div>`).join('');
+
       chartAttObj = new Chart(document.getElementById('chartAttendance'), {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{ label: '% Present', data: attRate,
-            borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)',
-            tension: 0.4, fill: true, pointBackgroundColor: '#3b82f6', pointRadius: 4 }]
-        },
-        options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, min: 0, max: 100, ticks: { color: '#64748b', callback: v => v + '%' } } } }
+        type:'line',
+        data:{ labels, datasets:[{ label:'% Present', data:attRate,
+          borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.08)',
+          tension:0.4, fill:true, pointBackgroundColor:'#3b82f6', pointRadius:4, pointHoverRadius:6 }]},
+        options:{ responsive:true, plugins:{legend:{display:false}}, scales:{
+          x:{...scaleDefaults.x, grid:{display:false}},
+          y:{...scaleDefaults.y, min:0, max:100, ticks:{...scaleDefaults.y.ticks, callback:v=>v+'%'}}
+        }}
       });
+
+      chartClockInObj = new Chart(document.getElementById('chartClockIn'), {
+        type:'bar',
+        data:{ labels:workHourLabels, datasets:[{ label:'Clock-ins', data:workHours,
+          backgroundColor:'rgba(59,130,246,0.5)', borderColor:'#3b82f6', borderWidth:1, borderRadius:4 }]},
+        options:{ responsive:true, plugins:{legend:{display:false}}, scales:{
+          x:{...scaleDefaults.x, grid:{display:false}},
+          y:{...scaleDefaults.y, ticks:{...scaleDefaults.y.ticks, stepSize:1}}
+        }}
+      });
+
+      chartFlagsObj = new Chart(document.getElementById('chartFlags'), {
+        type:'bar',
+        data:{ labels:flagLabels.length?flagLabels:['No flags'],
+          datasets:[{ label:'Count', data:flagVals.length?flagVals:[0],
+            backgroundColor:['rgba(248,113,113,0.5)','rgba(251,191,36,0.5)','rgba(110,231,183,0.5)','rgba(59,130,246,0.5)'],
+            borderColor:['#f87171','#fbbf24','#6ee7b7','#3b82f6'], borderWidth:1, borderRadius:4 }]},
+        options:{ responsive:true, plugins:{legend:{display:false}}, scales:{
+          x:{...scaleDefaults.x, grid:{display:false}},
+          y:{...scaleDefaults.y, ticks:{...scaleDefaults.y.ticks, stepSize:1}}
+        }}
+      });
+
+      const empSel = document.getElementById('attEmployeeSelect');
+      empSel.innerHTML = '<option value="">— Select employee —</option>' +
+        allEmployees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+
+      buildMicrocharts(shifts, days);
 
     } catch(e) { console.error('Analytics error:', e); }
+  }
+
+  function toggleAttendance(mode) {
+    attMode = mode;
+    const activeStyle = 'background:var(--card);color:var(--accent);border:none;border-radius:6px;padding:0.3rem 0.75rem;font-family:Syne,sans-serif;font-weight:600;font-size:0.75rem;cursor:pointer';
+    const inactiveStyle = 'background:none;color:var(--muted);border:none;border-radius:6px;padding:0.3rem 0.75rem;font-family:Syne,sans-serif;font-weight:600;font-size:0.75rem;cursor:pointer';
+    document.getElementById('attToggleAvg').style.cssText = mode==='avg' ? activeStyle : inactiveStyle;
+    document.getElementById('attToggleEmp').style.cssText = mode==='emp' ? activeStyle : inactiveStyle;
+    document.getElementById('empAttSelect').style.display = mode==='emp' ? 'block' : 'none';
+    if (mode === 'avg') updateAvgAttChart();
+  }
+
+  function updateAvgAttChart() {
+    if (!chartAttObj) return;
+    const days=[], labels=[];
+    for (let i=6;i>=0;i--) { const d=new Date(); d.setDate(d.getDate()-i); days.push(d.toLocaleDateString('en-CA')); labels.push(d.toLocaleDateString('en-SG',{weekday:'short',day:'numeric'})); }
+    const total = allEmployees.length||1;
+    const attRate = days.map(date=>Math.round(new Set(allShiftsCache.filter(s=>s.date===date).map(s=>s.uid)).size/total*100));
+    chartAttObj.data.labels=labels; chartAttObj.data.datasets[0].label='% Present';
+    chartAttObj.data.datasets[0].data=attRate; chartAttObj.data.datasets[0].borderColor='#3b82f6';
+    chartAttObj.data.datasets[0].backgroundColor='rgba(59,130,246,0.08)';
+    chartAttObj.options.scales.y.max=100; chartAttObj.options.scales.y.ticks.callback=v=>v+'%';
+    chartAttObj.update();
+  }
+
+  function updateEmpAttChart() {
+    const uid = document.getElementById('attEmployeeSelect').value;
+    if (!uid||!chartAttObj) return;
+    const emp = allEmployees.find(e=>e.id===uid);
+    const days=[], labels=[];
+    for (let i=6;i>=0;i--) { const d=new Date(); d.setDate(d.getDate()-i); days.push(d.toLocaleDateString('en-CA')); labels.push(d.toLocaleDateString('en-SG',{weekday:'short',day:'numeric'})); }
+    const present = days.map(date=>allShiftsCache.some(s=>s.uid===uid&&s.date===date)?1:0);
+    chartAttObj.data.labels=labels; chartAttObj.data.datasets[0].label=emp?.name||'Employee';
+    chartAttObj.data.datasets[0].data=present; chartAttObj.data.datasets[0].borderColor='#6ee7b7';
+    chartAttObj.data.datasets[0].backgroundColor='rgba(110,231,183,0.08)';
+    chartAttObj.options.scales.y.max=1; chartAttObj.options.scales.y.ticks.callback=v=>v===1?'Present':'Absent';
+    chartAttObj.update();
+  }
+
+  function buildMicrocharts(shifts, days) {
+    const total = allEmployees.length||1;
+    const presentData = days.map(date=>new Set(shifts.filter(s=>s.date===date).map(s=>s.uid)).size);
+    const flaggedData = days.map(date=>shifts.filter(s=>s.date===date&&s.status==='flagged').length);
+    const lateData = days.map(date=>shifts.filter(s=>s.date===date&&s.flags?.includes('late')).length);
+    const microOpts = { responsive:false, animation:false, plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false}}, elements:{point:{radius:0},line:{borderWidth:2,tension:0.4}} };
+    new Chart(document.getElementById('microPresent'),{type:'line',data:{labels:days,datasets:[{data:presentData,borderColor:'#6ee7b7',backgroundColor:'rgba(110,231,183,0.1)',fill:true}]},options:microOpts});
+    new Chart(document.getElementById('microFlagged'),{type:'line',data:{labels:days,datasets:[{data:flaggedData,borderColor:'#f87171',backgroundColor:'rgba(248,113,113,0.1)',fill:true}]},options:microOpts});
+    new Chart(document.getElementById('microLate'),{type:'line',data:{labels:days,datasets:[{data:lateData,borderColor:'#fbbf24',backgroundColor:'rgba(251,191,36,0.1)',fill:true}]},options:microOpts});
+  }
+
+  window.toggleAttendance = toggleAttendance;
+  window.updateEmpAttChart = updateEmpAttChart;
+
+  // ── Radial Gauge ─────────────────────────────────────────────
+  function drawRadialGauge(pct, present, total) {
+    const canvas = document.getElementById('chartRadial');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cx = W/2, cy = H - 10;
+    const r = Math.min(W, H*2) * 0.42;
+    const startAngle = Math.PI;
+    const endAngle = 2 * Math.PI;
+    const valueAngle = startAngle + (pct/100) * Math.PI;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Track background
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, startAngle, endAngle);
+    ctx.strokeStyle = 'rgba(30,30,46,0.8)';
+    ctx.lineWidth = 14;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Animated fill
+    let currentAngle = startAngle;
+    const targetAngle = valueAngle;
+    const color = pct >= 80 ? '#6ee7b7' : pct >= 50 ? '#fbbf24' : '#f87171';
+
+    function animate() {
+      if (currentAngle >= targetAngle) {
+        // Draw final state + radial stats
+        document.getElementById('radialValue').textContent = pct + '%';
+        document.getElementById('radialStats').innerHTML = `
+          <div style="text-align:center;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:0.5rem">
+            <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--accent)">${present}</div>
+            <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em">Present</div>
+          </div>
+          <div style="text-align:center;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:0.5rem">
+            <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--muted)">${total - present}</div>
+            <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em">Absent</div>
+          </div>`;
+        return;
+      }
+      ctx.clearRect(0, 0, W, H);
+
+      // Track
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAngle, endAngle);
+      ctx.strokeStyle = 'rgba(30,30,46,0.8)';
+      ctx.lineWidth = 14;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Progress
+      const gradient = ctx.createLinearGradient(cx-r, cy, cx+r, cy);
+      gradient.addColorStop(0, color + '80');
+      gradient.addColorStop(1, color);
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAngle, currentAngle);
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 14;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Dot at tip
+      const dotX = cx + r * Math.cos(currentAngle);
+      const dotY = cy + r * Math.sin(currentAngle);
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 7, 0, Math.PI*2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 3, 0, Math.PI*2);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+
+      currentAngle += Math.PI / 60;
+      requestAnimationFrame(animate);
+    }
+    animate();
   }
 
   
@@ -1857,7 +2718,7 @@ In one short sentence, predict: will they likely be late today, or might they st
         });
         const data = await res.json();
         const prediction = data.choices?.[0]?.message?.content || '';
-        if (prediction) showToast(`🔔 ${emp.name}: ${prediction}`, 'warning');
+        if (prediction) showToast(`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> ${emp.name}: ${prediction}`, 'warning');
       } catch(e) { console.error('Prediction error:', e); }
     }
   }
